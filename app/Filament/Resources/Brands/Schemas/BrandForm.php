@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Brands\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -29,7 +30,7 @@ class BrandForm
                         ->rows(3)
                         ->default(null)
                             ->columnSpanFull(),
-                        TextInput::make('logo')
+                        FileUpload::make('logo')
                             ->image()
                             ->directory('brands')
                             ->disk('public')

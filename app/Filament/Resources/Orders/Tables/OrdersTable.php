@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Filament\Resources\Orders\Tables;
+
+use App\Filament\Resources\Customers\CustomerResource;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Table;
+
+class OrdersTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('order_number')
+                    ->sortable()
+                    ->weight('bold')
+                    ->copyable()
+                    ->searchable(),
+                TextColumn::make('customer.name')
+                    ->searchable()
+                    ->sortable()
+                    ->color('primary')
+                    // url ke halaman edit customer. karena masi belum ada views untuk customer, jadi kita arahkan ke null dulu
+                    ->url(fn($record) => $record->customer ? CustomerResource::getUrl('edit', ['record' => $record->customer]) : null),
+                TextColumn::make('coupon_id')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('discount_amount')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('total')
+                    ->money(currency: 'IDR', locale: 'id')
+                    ->color('success')
+                    ->weight('bold')
+                    ->sortable(),
+                TextColumn::make('payment_status')
+                    ->badge()
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->badge(),
+                TextColumn::make('items_count')
+                    ->color('info')
+                    ->counts('items')
+                    ->badge(),
+                TextColumn::make('tracking_number')
+                    ->toggleable()
+                    ->copyable()
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->filters([
+                SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'processing' => 'Processing',
+                        'shipped' => 'Shipped',
+                        'delivered' => 'Delivered',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->multiple()
+                    ->native(false),
+                SelectFilter::make('payment_status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'paid' => 'Sudah Bayar',
+                        'failed' => 'Gagal',
+                        'refunded' => 'Refunded',
+                    ])
+                    ->native(false),
+                TrashedFilter::make(),
+            ])
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                ]),
+            ]);
+    }
+}
