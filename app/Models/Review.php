@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
+    use HasFactory;
     //fillable attributes for mass assignment
     protected $fillable = [
         'product_id',
@@ -20,7 +22,7 @@ class Review extends Model
         'is_approved',
     ];
 
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'rating' => 'integer',
@@ -31,23 +33,23 @@ class Review extends Model
 
     // scope to only approved reviews
     #[Scope]
-    protected function approved(Builder $query) : void
+    public function approved(Builder $query): void
     {
         $query->where('is_approved', true);
     }
 
     // scope to only reviews for verified purchases
     #[Scope]
-    protected function verified(Builder $query) : void
+    public function verified(Builder $query): void
     {
         $query->where('is_verified_purchase', true);
     }
 
     // scope to only reviews with a certain rating
     #[Scope]
-    protected function rating(Builder $query, int $rating) : void
+    public function rating(Builder $query, int $rating): void
     {
-        $query->where('rating', $rating);   
+        $query->where('rating', $rating);
     }
 
     // Relationship to Product
@@ -68,4 +70,8 @@ class Review extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function isApproved(): bool
+    {
+        return $this->is_approved;
+    }
 }

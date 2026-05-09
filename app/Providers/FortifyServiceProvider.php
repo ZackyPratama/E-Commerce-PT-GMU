@@ -44,5 +44,25 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
+
+        $this->configureActions();
+        $this->configureViews();
+    }
+
+    private function configureActions(): void
+    {
+        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        Fortify::createUsersUsing(CreateNewUser::class);
+    }
+
+    private function configureViews(): void
+    {
+        Fortify::loginView(fn () => view('auth.customer.login'));
+        Fortify::verifyEmailView(fn () => view('livewire.auth.verify-email'));
+        Fortify::twoFactorChallengeView(fn () => view('livewire.auth.two-factor-challenge'));
+        Fortify::confirmPasswordView(fn () => view('livewire.auth.confirm-password'));
+        Fortify::registerView(fn () => view('livewire.auth.register'));
+        Fortify::requestPasswordResetLinkView(fn () => view('livewire.auth.forgot-password'));
+        Fortify::resetPasswordView(fn ($request) => view('livewire.auth.reset-password', ['request' => $request]));
     }
 }

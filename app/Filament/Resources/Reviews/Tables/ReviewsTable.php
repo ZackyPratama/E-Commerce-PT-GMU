@@ -20,13 +20,13 @@ class ReviewsTable
     {
         return $table
             ->columns([
-                TextColumn::make('product_name')
+                TextColumn::make('product.name')
                     ->label('Nama Product')
                     ->searchable()
                     ->url(fn($record) => ProductResource::getUrl('edit', [$record->product]))
                     ->weight('bold')
                     ->sortable(),
-                TextColumn::make('customer_name')
+                TextColumn::make('customer.name')
                     ->label('Nama Pelanggan')
                     ->searchable()
                     ->url(fn($record) => CustomerResource::getUrl('edit', [$record->customer]))
@@ -39,7 +39,7 @@ class ReviewsTable
                 TextColumn::make('title')
                     ->limit(50)
                     ->searchable(),
-                TextColumn::make('Comment')
+                TextColumn::make('comment')
                     ->limit(100)
                     ->wrap()
                     ->searchable(),
@@ -83,7 +83,7 @@ class ReviewsTable
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->action(fn($record) => $record->update(['is_approved' => false]))
-                    ->visible(fn($record) => $record->isApproved)
+                    ->visible(fn($record) => $record->is_approved)
                     ->requiresConfirmation(),
                 EditAction::make(),
             ])

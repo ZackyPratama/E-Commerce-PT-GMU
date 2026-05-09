@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
         'email',
@@ -15,7 +17,9 @@ class Customer extends Model
         'phone',
         'date_of_birth',
         'gender',
-        'is_active'
+        'is_active',
+        'remember_token',
+        'email_verified_at',
     ];
 
     protected $hidden = [

@@ -1,0 +1,61 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\ProductImage;
+use App\Models\ProductVariant;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class ProductSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $categories = Category::all();
+        $brands = Brand::all();
+
+        // Create 100 products
+        $this->command->info('Creating products...');
+        $bar = $this->command->getOutput()->createProgressBar(100);
+
+        for ($i = 0; $i < 100; $i++) {
+            $product = Product::factory()->create([
+                'category_id' => $categories->random()->id,
+                'brand_id' => $brands->random()->id,
+            ]);
+
+            // Create 2-4 images per product
+            for ($j = 0; $j < rand(2, 4); $j++) {
+                ProductImage::factory()->create([
+                    'product_id' => $product->id,
+                    'is_primary' => $j === 0,
+                    'sort_order' => $j,
+                ]);
+            }
+
+            // Create variants for 30% of products
+            if ($product->has_variants) {
+                $variantCount = rand(2, 5);
+
+                for ($k = 0; $k < $variantCount; $k++) {
+                    ProductVariant::factory()->create([
+                        'product_id' => $product->id,
+                        'sort_order' => $k,
+                    ]);
+                }
+            }
+
+            $bar->advance();
+        }
+
+        $bar->finish();
+        $this->command->newLine();
+        $this->command->info('Products created successfully!');
+    }
+}
