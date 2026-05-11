@@ -23,11 +23,12 @@ class CouponsTable
                     ->copyable()
                     ->searchable(),
                 TextColumn::make('type')
-                    ->color([
+                    ->badge()
+                    ->color(fn($state) => match ($state) {
                         'fixed' => 'success',
                         'percentage' => 'info',
-                    ])
-                    ->badge(),
+                        default => 'gray',
+                    }),
                 TextColumn::make('value')
                     ->label('Discount')
                     ->formatStateUsing(fn($record) => $record->type === 'percentage' ? $record->value . '%' : 'Rp ' . number_format($record->value, 2))
@@ -35,7 +36,7 @@ class CouponsTable
                     ->sortable(),
                 TextColumn::make('minimum_order_value')
                     ->label('Min. Order')
-                    ->money('IDR', locale:'id')
+                    ->money('IDR', locale: 'id')
                     ->sortable(),
                 TextColumn::make('usage_limit')
                     ->label('Limit Pemakaian')
@@ -55,7 +56,7 @@ class CouponsTable
                     ->label('Berakhir')
                     ->dateTime()
                     ->sortable()
-                    ->color(fn($state)=>$state->isPast() ? 'danger' : 'gray'),
+                    ->color(fn($state) => $state->isPast() ? 'danger' : 'gray'),
                 IconColumn::make('is_active')
                     ->label('Status')
                     ->boolean(),
@@ -75,7 +76,7 @@ class CouponsTable
                         'fixed' => 'Fixed',
                         'percentage' => 'Percentage'
                     ]),
-                    TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Status')
                     ->boolean()
                     ->trueLabel('Active Only')
