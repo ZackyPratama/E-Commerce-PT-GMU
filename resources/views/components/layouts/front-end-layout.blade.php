@@ -34,7 +34,7 @@
             <div class="flex items-center justify-between py-4">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="" class="text-2xl font-bold text-blue-600">
+                    <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">
                         {{ config('app.name', 'E-Commerce') }}
                     </a>
                 </div>
@@ -68,7 +68,7 @@
             <nav class="border-t py-4">
                 <ul class="flex items-center gap-8">
                     <li>
-                        <a href="" class="text-gray-700 hover:text-blue-600 font-medium">
+                        <a href="{{ route('home') }}" class="text-gray-700 hover:text-blue-600 font-medium">
                             Home
                         </a>
                     </li>

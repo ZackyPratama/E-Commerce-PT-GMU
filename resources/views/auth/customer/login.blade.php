@@ -13,7 +13,7 @@
         <div class="max-w-md w-full">
             <!-- Logo -->
             <div class="text-center mb-8">
-                <a href="" class="text-3xl font-bold text-blue-600">
+                <a href="{{ route('home') }}" class="text-3xl font-bold text-blue-600">
                     {{ config('app.name') }}
                 </a>
                 <h2 class="mt-6 text-3xl font-bold text-gray-900">
@@ -21,7 +21,7 @@
                 </h2>
                 <p class="mt-2 text-sm text-gray-600">
                     Don't have an account?
-                    <a href="" class="font-medium text-blue-600 hover:text-indigo-500">
+                    <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-indigo-500">
                         Sign up
                     </a>
                 </p>
@@ -109,7 +109,7 @@
 
             <!-- Back to Home -->
             <p class="mt-6 text-center text-sm text-gray-600">
-                <a href="" class="font-medium text-blue-600 hover:text-indigo-500">
+                <a href="{{ route('home') }}" class="font-medium text-blue-600 hover:text-indigo-500">
                     ← Back to Home
                 </a>
             </p>

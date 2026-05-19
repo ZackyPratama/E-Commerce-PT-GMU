@@ -10,6 +10,7 @@ use Flowframe\Trend\TrendValue;
 class RevenueChart extends ChartWidget
 {
     protected static ?int $sort = 2;
+    protected int | string | array $columnSpan = 'full';
     protected ?string $heading = 'Revenue Chart';
 
     public ?string $filter = 'week';

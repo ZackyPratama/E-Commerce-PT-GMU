@@ -26,14 +26,14 @@ class Brand extends Model
     #[Scope()]
     protected function active(Builder $builder)
     {
-        $builder->where('is_active', true);
+        return $builder->where('is_active', true);
     }
 
     // scope to sort brands by sort_order
     #[Scope()]
     protected function sorted(Builder $builder)
     {
-        $builder->orderBy('sort_order', 'asc');
+        return $builder->orderBy('sort_order', 'asc');
     }
 
     // Relationships with products
