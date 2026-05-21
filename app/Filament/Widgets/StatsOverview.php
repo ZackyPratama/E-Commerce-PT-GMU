@@ -27,30 +27,30 @@ class StatsOverview extends StatsOverviewWidget
         ->count();
 
         // widgets jika stok menipis
-        $lowStockProduct = Product::where('stock_status', 'low_stock')->count();
-        // $lowStockProduct = Product::lowStock()->count();
+        // $lowStockProduct = Product::where('stock_status', 'low_stock')->count();
+        $lowStockProduct = Product::lowStock()->count();
         
 
         return [
-            Stat::make('Total Revenue', number_format($totalRevenue, 2))
-            ->description('Hari ini Rp. ' . number_format($todayRevenue, 2))
+            Stat::make('Total Pendapatan', number_format($totalRevenue, 3))
+            ->description('Hari ini Rp. ' . number_format($todayRevenue, 3))
             ->descriptionIcon('heroicon-m-arrow-trending-up')
             ->color('success'),
 
-            Stat::make('Total Order', $totalOrder)
-            ->description($pendingOrder . ' pending')
+            Stat::make('Total Pesanan', $totalOrder)
+            ->description($pendingOrder . ' Pesanan tertunda')
             ->descriptionIcon('heroicon-m-shopping-cart')
             ->color('warning')
             ->url(route('filament.admin.resources.orders.index')),
 
-            Stat::make('Total Customer', $totalCustomer)
-            ->description($newCustomerThisMonth . ' new this month')
+            Stat::make('Total Pengguna', $totalCustomer)
+            ->description($newCustomerThisMonth . ' Pengguna baru bulan ini')
             ->descriptionIcon('heroicon-m-user-group')
             ->color('info')
             ->url(route('filament.admin.resources.customers.index')),
 
-            Stat::make('Low Stock Alert', $lowStockProduct)
-            ->description('Product Menipis')
+            Stat::make('Stok Produk Menipis', $lowStockProduct)
+            ->description('Produk Menipis')
             ->descriptionIcon('heroicon-m-exclamation-triangle')
             ->color('danger')
             ->url(route('filament.admin.resources.products.index')),

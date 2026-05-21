@@ -22,20 +22,24 @@ class OrdersTable
         return $table
             ->columns([
                 TextColumn::make('order_number')
+                    ->label('No. Pesanan')
                     ->sortable()
                     ->weight('bold')
                     ->copyable()
                     ->searchable(),
                 TextColumn::make('customer.name')
+                    ->label('Pelanggan')
                     ->searchable()
                     ->sortable()
                     ->color('primary')
                     // url ke halaman edit customer. karena masi belum ada views untuk customer, jadi kita arahkan ke null dulu
                     ->url(fn($record) => $record->customer ? CustomerResource::getUrl('edit', ['record' => $record->customer]) : null),
                 TextColumn::make('coupon_id')
+                    ->label('Id Kupon')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('discount_amount')
+                    ->label('Jumlah Diskon')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('total')
@@ -44,27 +48,34 @@ class OrdersTable
                     ->weight('bold')
                     ->sortable(),
                 TextColumn::make('payment_status')
+                    ->label('Status Pembayaran')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('status')
+                    ->label('Status Pesanan')
                     ->badge(),
                 TextColumn::make('items_count')
+                    ->label('Jumlah Pesanan')
                     ->color('info')
                     ->counts('items')
                     ->badge(),
                 TextColumn::make('tracking_number')
+                    ->label('Nomor Pelacakan')
                     ->toggleable()
                     ->copyable()
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Diperbarui Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
+                    ->label('Dihapus Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -73,17 +84,17 @@ class OrdersTable
             ->filters([
                 SelectFilter::make('status')
                     ->options([
-                        'pending' => 'Pending',
-                        'processing' => 'Processing',
-                        'shipped' => 'Shipped',
-                        'delivered' => 'Delivered',
-                        'cancelled' => 'Cancelled',
+                        'pending' => 'Menunggu Pesanan',
+                        'processing' => 'Diproses',
+                        'shipped' => 'Dikirim',
+                        'delivered' => 'Diterima',
+                        'cancelled' => 'Dibatalkan',
                     ])
                     ->multiple()
                     ->native(false),
                 SelectFilter::make('payment_status')
                     ->options([
-                        'pending' => 'Pending',
+                        'pending' => 'Menunggu Pembayaran',
                         'paid' => 'Sudah Bayar',
                         'failed' => 'Gagal',
                         'refunded' => 'Refunded',

@@ -17,6 +17,11 @@ use UnitEnum;
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
+
+    // Optional: Customize label side admin panel
+    protected static ?string $modelLabel = 'Kategori';
+    protected static ?string $pluralModelLabel = 'Kategori';
+    //----------------------------------------------------
     protected static string | UnitEnum | null $navigationGroup = 'Katalog';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Tag;
 

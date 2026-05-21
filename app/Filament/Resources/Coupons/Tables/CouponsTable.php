@@ -61,10 +61,12 @@ class CouponsTable
                     ->label('Status')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Diperbarui Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -79,8 +81,8 @@ class CouponsTable
                 TernaryFilter::make('is_active')
                     ->label('Status')
                     ->boolean()
-                    ->trueLabel('Active Only')
-                    ->falseLabel('Inactive Only')
+                    ->trueLabel('Aktif')
+                    ->falseLabel('Tidak Aktif')
                     ->native(false),
             ])
             ->recordActions([

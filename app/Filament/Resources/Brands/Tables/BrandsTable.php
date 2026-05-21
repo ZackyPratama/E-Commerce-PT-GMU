@@ -16,6 +16,7 @@ class BrandsTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nama Brand')
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
@@ -24,15 +25,19 @@ class BrandsTable
                 TextColumn::make('website')
                     ->searchable(),
                 IconColumn::make('is_active')
+                    ->label('Tampilkan di toko')
                     ->boolean(),
                 TextColumn::make('sort_order')
+                    ->label('Urutan Sortir')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Waktu Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Waktu Diperbarui')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

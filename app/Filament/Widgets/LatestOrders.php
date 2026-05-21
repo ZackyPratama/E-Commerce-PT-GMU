@@ -21,9 +21,11 @@ class LatestOrders extends TableWidget
             ->query(fn(): Builder => Order::query())
             ->columns([
                 TextColumn::make('order_number')
+                    ->label('No. Pesanan')
                     ->weight('bold')
                     ->url(fn($record) => OrderResource::getUrl('edit', [$record])),
                 TextColumn::make('customer.name')
+                    ->label('Pelanggan')
                     ->url(fn($record) => CustomerResource::getUrl('edit', [$record->customer])),
                 TextColumn::make('status')
                     ->badge()
@@ -39,10 +41,10 @@ class LatestOrders extends TableWidget
                     ->weight('bold'),
                 
                 TextColumn::make('created_at')
-                    ->label('Ordered')
+                    ->label('Waktu Pesanan')
                     ->since(),
             ])
-            ->heading('latest Orders')
+            ->heading('Pesanan Terbaru')
             ->filters([
                 //
             ])

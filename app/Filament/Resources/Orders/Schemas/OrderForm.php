@@ -14,28 +14,30 @@ class OrderForm
     {
         return $schema
             ->components([
-                Section::make('Order Status')
+                Section::make('Status Pesanan')
                     ->columns(2)
                     ->columnSpanFull()
                     ->schema([
                         Select::make('status')
-                            ->label('Order Status')
+                            ->label('Status Pesanan')
                             ->options([
-                                'pending' => 'Pending',
-                                'processing' => 'Processing',
-                                'shipped' => 'Shipped',
-                                'delivered' => 'Delivered',
-                                'cancelled' => 'Cancelled',
+                                'pending' => 'Menunggu Pesanan',
+                                'processing' => 'Diproses',
+                                'shipped' => 'Dikirim',
+                                'delivered' => 'Diterima',
+                                'cancelled' => 'Dibatalkan',
                             ])
                             ->native(false)
                             ->default('pending')
                             ->required(),
                         TextInput::make('tracking_number')
+                            ->label('Nomor Pelacakan')
                             ->helperText('Opsional, hanya untuk status "Shipped"')
                             ->default(null),
                         Select::make('payment_status')
+                            ->label('Status Pembayaran')
                             ->options([
-                                'pending' => 'Pending',
+                                'pending' => 'Menunggu Pembayaran',
                                 'paid' => 'Sudah Bayar',
                                 'failed' => 'Gagal',
                                 'refunded' => 'Refunded',
@@ -44,6 +46,7 @@ class OrderForm
                             ->required()
                             ->default('pending'),
                         Textarea::make('admin_notes')
+                            ->label('Catatan Admin')
                             ->default(null)
                             ->columnSpanFull(),
                     ]),

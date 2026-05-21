@@ -17,22 +17,31 @@ class CategoriesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nama Kategori')
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
-                ImageColumn::make('image'),
+                ImageColumn::make('image')
+                    ->label('Gambar'),
+                TextColumn::make('description')
+                    ->label('Deskripsi')
+                    ->limit(50),
                 IconColumn::make('is_active')
+                    ->label('Tampilkan di toko')
                     ->boolean(),
                 TextColumn::make('sort_order')
+                    ->label('Urutan Sortir')
                     ->numeric()
                     ->sortable(),
                 // TextColumn::make('meta_title')
                 //     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Waktu Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Waktu Diperbarui')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

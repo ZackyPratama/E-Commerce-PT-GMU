@@ -11,8 +11,9 @@ class RevenueChart extends ChartWidget
 {
     protected static ?int $sort = 2;
     protected int | string | array $columnSpan = 'full';
-    protected ?string $heading = 'Revenue Chart';
+    protected ?string $heading = 'Statistik Pendapatan';
 
+    // filter untuk memilih periode waktu
     public ?string $filter = 'week';
 
     protected function getData(): array
@@ -32,7 +33,7 @@ class RevenueChart extends ChartWidget
             ->sum('total');
         return [
             'dataset' =>[
-                'label' => 'Revenue',
+                'label' => 'Pendapatan',
                 'data' => $data->map(fn(TrendValue $value) => $value->aggregate)
             ],
             'labels' => $data->map(fn(TrendValue $value) => $value->date)

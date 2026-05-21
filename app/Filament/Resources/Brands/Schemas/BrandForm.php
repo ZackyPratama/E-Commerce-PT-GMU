@@ -20,6 +20,7 @@ class BrandForm
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('name')
+                            ->label('Nama Brand')
                             ->required(),
                         TextInput::make('slug')
                             ->visibleOn('edit')
@@ -27,6 +28,7 @@ class BrandForm
                             ->unique(ignoreRecord: true)
                             ->required(),
                         Textarea::make('description')
+                        ->label('Deskripsi')
                         ->rows(3)
                         ->default(null)
                             ->columnSpanFull(),
@@ -45,8 +47,10 @@ class BrandForm
                 Section::make('Detail Tampilan')
                     ->schema([
                         Toggle::make('is_active')
+                            ->label('Tampilkan di toko')
                             ->required(),
                         TextInput::make('sort_order')
+                            ->label('Urutan Sortir')
                             ->required()
                             ->numeric()
                             ->default(0),

@@ -18,9 +18,12 @@ use UnitEnum;
 class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
-
+    // Optional: Customize label side admin panel
+    protected static ?string $modelLabel = 'brand';
+    protected static ?string $pluralModelLabel = 'brand';
+    //----------------------------------------------------
     protected static string|UnitEnum|null $navigationGroup = 'Katalog';
-    
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CheckBadge;
 
     protected static ?string $recordTitleAttribute = 'name';

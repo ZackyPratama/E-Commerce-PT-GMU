@@ -29,7 +29,7 @@ class ProductForm
                 Tabs::make('Detail Product')
                     ->columnSpanFull()
                     ->tabs([
-                        Tab::make('Product Info')
+                        Tab::make('Info Produk')
                             ->icon(Heroicon::InformationCircle)
                             ->schema([
                                 Section::make('Detail Produk')
@@ -190,7 +190,7 @@ class ProductForm
                                     ]),
                             ]),
 
-                        Tab::make('Variants')
+                        Tab::make('Jenis & Variasi')
                             ->icon(Heroicon::Squares2x2)
                             ->schema([
                                 Section::make('Variasi Produk')

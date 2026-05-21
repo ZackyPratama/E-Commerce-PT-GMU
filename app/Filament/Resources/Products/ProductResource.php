@@ -20,6 +20,11 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
+    // Optional: Customize label side admin panel
+    protected static ?string $modelLabel = 'Produk';
+    protected static ?string $pluralModelLabel = 'Produk';
+    //----------------------------------------------------
+
     protected static string|UnitEnum|null $navigationGroup = 'Katalog';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingBag;
 

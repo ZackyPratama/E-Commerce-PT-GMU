@@ -19,6 +19,11 @@ class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
 
+    // Optional: Customize label side admin panel
+    protected static ?string $modelLabel = 'Kupon';
+    protected static ?string $pluralModelLabel = 'Kupon';
+    //----------------------------------------------------
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Ticket;
 
     protected static string|UnitEnum| null $navigationGroup = 'Penjualan';

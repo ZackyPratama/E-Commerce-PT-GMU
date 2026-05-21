@@ -19,6 +19,11 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
+    // Optional: Customize label side admin panel
+    protected static ?string $modelLabel = 'Pelanggan';
+    protected static ?string $pluralModelLabel = 'Pelanggan';
+    //----------------------------------------------------
+
     protected static string|UnitEnum|null $navigationGroup = 'Management Pelanggan';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Users;

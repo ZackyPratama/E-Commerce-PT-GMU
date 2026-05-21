@@ -20,59 +20,73 @@ class ProductsTable
         return $table
             ->columns([
                 ImageColumn::make('primaryImage.image_path')
-                    ->label('Image')
+                    ->label('Gambar Utama')
                     ->circular()
                     ->defaultImageUrl(url('/images/placeholder.jpg')),
                 TextColumn::make('name')
+                    ->label('Nama Produk')
                     ->searchable(),
                 TextColumn::make('sku')
                     ->label('SKU')
                     ->searchable(),
                 TextColumn::make('category.name')
+                    ->label('Kategori')
                     ->sortable()
                     ->searchable()
                     ->badge()
                     ->color('info'),
                 TextColumn::make('brand.name')
+                    ->label('Brand')
                     ->sortable()
                     ->searchable()
                     ->toggleable()
                     ->badge(),
                 TextColumn::make('price')
+                    ->label('Harga')
                     //add currency formatting for IDR
                     ->money('IDR', locale: 'id')
                     ->sortable(),
                 TextColumn::make('compare_price')
+                    ->label('Harga Banding')
                     //add currency formatting for IDR
                     ->money('IDR', locale: 'id')
                     ->sortable(),
                 TextColumn::make('cost_price')
+                    ->label('Harga Modal')
                     //add currency formatting for IDR
                     ->money('IDR', locale: 'id')
                     ->sortable(),
                 TextColumn::make('stock_quantity')
                     ->numeric()
                     ->sortable()
+                    ->label('Stok')
                     ->badge(),
                 TextColumn::make('stock_status')
+                    ->label('Status Stok')
                     ->badge(),
                 IconColumn::make('is_active')
+                    ->label('Tampilkan di Toko')
                     ->boolean(),
                 IconColumn::make('is_featured')
+                    ->label('Produk Unggulan')
                     ->boolean(),
                 TextColumn::make('views_count')
+                    ->label('Jumlah Dilihat')
                     ->numeric()
                     ->badge()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Diperbarui Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
+                    ->label('Dihapus Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

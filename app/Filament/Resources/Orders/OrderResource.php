@@ -21,6 +21,11 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
+    // Optional: Customize label side admin panel
+    protected static ?string $modelLabel = 'Pesanan';
+    protected static ?string $pluralModelLabel = 'Pesanan';
+    //----------------------------------------------------
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingCart;
 
     protected static string|UnitEnum| null $navigationGroup = 'Penjualan';
