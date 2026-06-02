@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -43,9 +42,13 @@ return new class extends Migration
             $table->text("customer_notes")->nullable();
             $table->text("admin_notes")->nullable();
 
+            // Midtrans specific fields
+            $table->string('snap_token')->nullable();
+            $table->string('midtrans_order_id')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
-            });
+        });
     }
 
     /**

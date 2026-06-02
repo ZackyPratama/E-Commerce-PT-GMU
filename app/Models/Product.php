@@ -83,7 +83,7 @@ class Product extends Model
     protected function lowStock(Builder $query): void
     {
         $query->whereColumn('stock_quantity', '<=', 'low_stock_threshold')
-            ->where('stock_quality', '>', 0);
+            ->where('stock_quantity', '>', 0);
     }
 
     // scope to filter by category

@@ -49,6 +49,12 @@ class Customer extends Authenticable
         $builder->where('is_active', true);
     }
 
+     // Relationships
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
     public function defaultAddresss()
     {
         return $this->hasOne(Address::class)->where('is_default', true);
