@@ -50,10 +50,25 @@ class OrdersTable
                 TextColumn::make('payment_status')
                     ->label('Status Pembayaran')
                     ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'failed' => 'danger',
+                        'refunded' => 'info',
+                        default => 'secondary',
+                    })
                     ->searchable(),
                 TextColumn::make('status')
                     ->label('Status Pesanan')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'processing' => 'info',
+                        'shipped' => 'success',
+                        'delivered' => 'success',
+                        'cancelled' => 'danger',
+                        default => 'secondary',
+                    }),
                 TextColumn::make('items_count')
                     ->label('Jumlah Pesanan')
                     ->color('info')

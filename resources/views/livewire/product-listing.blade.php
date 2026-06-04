@@ -146,7 +146,7 @@
                             <option value="price_high">Harga: Tinggi ke Rendah</option>
                             <option value="name_asc">Nama: A ke Z</option>
                             <option value="name_desc">Nama: Z ke A</option>
-                            <option value="popular">Paling Populer</option>
+                            <option value="popular">Paling banyak dilihat</option>
                         </select>
                     </div>
 

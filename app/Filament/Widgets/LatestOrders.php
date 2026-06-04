@@ -29,7 +29,7 @@ class LatestOrders extends TableWidget
                     ->url(fn($record) => CustomerResource::getUrl('edit', [$record->customer])),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn(string $status): string => match ($status) {
+                    ->color(fn(string $state): string => match ($state) {
                         'pending' => 'warning',
                         'processing' => 'info',
                         'shipped' => 'success',

@@ -34,7 +34,7 @@
                                 <span class="font-semibold">2</span>
                             @endif
                         </div>
-                        <span class="ml-2 font-medium">Review</span>
+                        <span class="ml-2 font-medium">Cek Ulang Pesanan</span>
                     </div>
                     <div class="w-24 h-1 mx-4 {{ $step >= 3 ? 'bg-blue-600' : 'bg-gray-300' }}"></div>
                     <div class="flex items-center {{ $step >= 3 ? 'text-blue-600' : 'text-gray-400' }}">
@@ -42,7 +42,7 @@
                             class="flex items-center justify-center w-10 h-10 rounded-full border-2 {{ $step >= 3 ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300' }}">
                             <span class="font-semibold">3</span>
                         </div>
-                        <span class="ml-2 font-medium">Pembayaran</span>
+                        <span class="ml-2 font-medium">Bayar</span>
                     </div>
                 </div>
             </div>
@@ -162,7 +162,7 @@
                                             <option value="ID">Indonesia</option>
                                             <option value="UK">United Kingdom</option>
                                         </select>
-                                    </div> 
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -203,7 +203,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="font-bold text-gray-900">
-                                            Rp {{ number_format($item['price'] * $item['quantity'], 3) }}</p>
+                                            Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</p>
                                     </div>
                                 </div>
                             @endforeach
@@ -212,8 +212,7 @@
                         <!-- Customer Notes -->
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Catatan Pesanan (Opsional)</label>
-                            <textarea wire:model="customerNotes" rows="3"
-                                placeholder="Catatan khusus untuk pesanan Anda..."
+                            <textarea wire:model="customerNotes" rows="3" placeholder="Catatan khusus untuk pesanan Anda..."
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"></textarea>
                         </div>
 
@@ -236,7 +235,8 @@
 
                         <div class="space-y-4 mb-6">
                             <label class="relative cursor-pointer">
-                                <input type="radio" wire:model="paymentMethod" value="midtrans" class="peer sr-only">
+                                <input type="radio" wire:model="paymentMethod" value="midtrans" class="peer sr-only"
+                                    checked>
                                 <div
                                     class="border-2 rounded-lg p-4 peer-checked:border-blue-600 peer-checked:bg-indigo-50 hover:border-indigo-400 transition">
                                     <div class="flex items-center justify-between">
@@ -246,7 +246,7 @@
                                                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                             </svg>
                                             <div>
-                                                <p class="font-semibold text-gray-900">Credit/Debit Card</p>
+                                                <p class="font-semibold text-gray-900">Kartu Kredit</p>
                                                 <p class="text-sm text-gray-600">Pembayaran Diamankan melalui Midtrans</p>
                                             </div>
                                         </div>
@@ -266,7 +266,7 @@
                                                     d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
                                             <div>
-                                                <p class="font-semibold text-gray-900">Cash on Delivery (COD)</p>
+                                                <p class="font-semibold text-gray-900">Bayar di Tempat (COD)</p>
                                                 <p class="text-sm text-gray-600">Bayar saat menerima pesanan Anda</p>
                                             </div>
                                         </div>
@@ -281,7 +281,11 @@
                             </button>
                             <button wire:click="placeOrder"
                                 class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition font-semibold">
-                                Konfirmasi Pesanan
+                                @if($paymentMethod === 'midtrans')
+                                    Lanjut ke Pembayaran
+                                @else
+                                    Konfirmasi Pesanan
+                                @endif
                             </button>
                         </div>
                     </div>
@@ -296,13 +300,13 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Subtotal</span>
-                            <span class="font-medium">Rp {{ number_format($subtotal, 3) }}</span>
+                            <span class="font-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Ongkos Kirim</span>
                             <span class="font-medium">
                                 @if($shippingCost > 0)
-                                    Rp {{ number_format($shippingCost, 3) }}
+                                    Rp {{ number_format($shippingCost, 0, ',', '.') }}
                                 @else
                                     <span class="text-green-600">Gratis</span>
                                 @endif
@@ -311,7 +315,7 @@
                         @if($discountAmount > 0)
                             <div class="flex justify-between text-green-600">
                                 <span>Diskon</span>
-                                <span class="font-medium">-Rp {{ number_format($discountAmount, 3) }}</span>
+                                <span class="font-medium">-Rp {{ number_format($discountAmount, 0, ',', '.') }}</span>
                             </div>
                         @endif
                     </div>
@@ -356,7 +360,7 @@
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-semibold">Total</span>
                             <span class="text-2xl font-bold text-gray-900">
-                                Rp {{ number_format($total, 3) }}
+                                Rp {{ number_format($total, 0, ',', '.') }}
                             </span>
                         </div>
                     </div>

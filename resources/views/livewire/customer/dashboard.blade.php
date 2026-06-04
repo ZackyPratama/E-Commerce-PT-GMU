@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {{-- header --}}
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">My Account</h1>
+            <h1 class="text-3xl font-bold text-gray-900">Akun</h1>
             <h1 class="mt-2 text-sm text-gray-600">Selamat Berbelanja, {{ auth('customer')->user()->name }}!</h1>
         </div>
 
@@ -131,71 +131,74 @@
             </div>
 
             {{-- Recent Orders --}}
-<div class="lg:col-span-2">
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-900">Pesanan Terbaru</h2>
-            <a href="{{ route('customer.orders') }}" class="text-blue-600 hover:text-indigo-700 font-medium text-sm">
-                Lihat Semua →
-            </a>
-        </div>
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">Pesanan Terbaru</h2>
+                        <a href="{{ route('customer.orders') }}"
+                            class="text-blue-600 hover:text-indigo-700 font-medium text-sm">
+                            Lihat Semua →
+                        </a>
+                    </div>
 
-        @if($recentOrders->count() > 0)
-            <div class="space-y-4">
-                @foreach($recentOrders as $order)
-                    <a href="{{ route('customer.orders.show', $order->id) }}"
-                        class="block border rounded-lg p-4 hover:border-blue-600 hover:shadow-md transition">
-                        <div class="flex items-center justify-between mb-3">
-                            <div>
-                                <p class="font-semibold text-gray-900">{{ $order->order_number }}</p>
-                                <p class="text-sm text-gray-600">{{ $order->created_at->format('M d, Y') }}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-gray-900">${{ number_format($order->total, 2) }}</p>
-                                <span class="inline-block px-2 py-1 text-xs rounded {{ 
-                                                        $order->status === 'delivered' ? 'bg-green-100 text-green-800' :
-                    ($order->status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800') 
-                                                    }}">
-                                    {{ ucfirst($order->status) }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            @foreach($order->items->take(3) as $item)
-                                @if($item->product)
-                                    <div class="w-12 h-12 rounded bg-gray-100 overflow-hidden">
-                                        @if($item->product->primaryImage)
-                                            <img src="{{ asset('storage/' . $item->product->primaryImage->image_path) }}"
-                                                alt="{{ $item->product_name }}" class="w-full h-full object-cover">
-                                        @endif
-                                    </div>
-                                @endif
+                    @if($recentOrders->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($recentOrders as $order)
+                                            <a href="{{ route('customer.orders.show', $order->id) }}"
+                                                class="block border rounded-lg p-4 hover:border-blue-600 hover:shadow-md transition">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <div>
+                                                        <p class="font-semibold text-gray-900">{{ $order->order_number }}</p>
+                                                        <p class="text-sm text-gray-600">{{ $order->created_at->format('M d, Y') }}</p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <p class="font-bold text-gray-900">Rp
+                                                            {{ number_format($order->total, 0, ',', '.') }}</p>
+                                                        <span class="inline-block px-2 py-1 text-xs rounded {{ 
+                                                                            $order->status === 'delivered' ? 'bg-green-100 text-green-800' :
+                                ($order->status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                                    'bg-yellow-100 text-yellow-800') 
+                                                                        }}">
+                                                            {{ ucfirst($order->status) }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    @foreach($order->items->take(3) as $item)
+                                                        @if($item->product)
+                                                            <div class="w-12 h-12 rounded bg-gray-100 overflow-hidden">
+                                                                @if($item->product->primaryImage)
+                                                                    <img src="{{ asset('storage/' . $item->product->primaryImage->image_path) }}"
+                                                                        alt="{{ $item->product_name }}" class="w-full h-full object-cover">
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                    @if($order->items->count() > 3)
+                                                        <span class="text-sm text-gray-600">+{{ $order->items->count() - 3 }} more</span>
+                                                    @endif
+                                                </div>
+                                            </a>
                             @endforeach
-                            @if($order->items->count() > 3)
-                                <span class="text-sm text-gray-600">+{{ $order->items->count() - 3 }} more</span>
-                            @endif
                         </div>
-                    </a>
-                @endforeach
+                    @else
+                        <div class="text-center py-8">
+                            <svg class="mx-auto w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <p class="text-gray-600 mb-4">Belum ada pesanan</p>
+                            <a href="{{ route('products.index') }}"
+                                class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                                Mulai Berbelanja
+                            </a>
+                        </div>
+                    @endif
+                </div>
             </div>
-        @else
-            <div class="text-center py-8">
-                <svg class="mx-auto w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <p class="text-gray-600 mb-4">Belum ada pesanan</p>
-                <a href="{{ route('products.index') }}"
-                    class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
-                    Mulai Berbelanja
-                </a>
-            </div>
-        @endif
-    </div>
-</div>
-</div>
-
         </div>
+
     </div>
+</div>
 </div>

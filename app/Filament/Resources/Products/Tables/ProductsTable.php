@@ -63,7 +63,13 @@ class ProductsTable
                     ->badge(),
                 TextColumn::make('stock_status')
                     ->label('Status Stok')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'in_stock' => 'success',
+                        'low_stock' => 'warning',
+                        'out_of_stock' => 'danger',
+                        default => 'secondary',
+                    }),
                 IconColumn::make('is_active')
                     ->label('Tampilkan di Toko')
                     ->boolean(),

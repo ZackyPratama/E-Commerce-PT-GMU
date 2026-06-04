@@ -66,11 +66,11 @@
             <!-- Price -->
             <div class="flex items-center gap-2">
                 <span class="text-xl font-bold text-gray-900">
-                    Rp {{ number_format($product->price, 3) }}
+                    Rp {{ number_format($product->price, 0, ',', '.') }}
                 </span>
                 @if($product->compare_price)
                     <span class="text-sm text-gray-500 line-through">
-                        Rp {{ number_format($product->compare_price, 3) }}
+                        Rp {{ number_format($product->compare_price, 0, ',', '.') }}
                     </span>
                 @endif
             </div>

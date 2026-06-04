@@ -42,8 +42,8 @@ class CheckoutController extends Controller
         // Update order status jika belum success
         if ($order->payment_status !== 'completed') {
             $order->update([
-                'payment_status' => 'completed',
-                'status' => 'confirmed',
+                'payment_status' => 'paid',
+                'status' => 'processing',
                 'payment_completed_at' => now(),
             ]);
         }

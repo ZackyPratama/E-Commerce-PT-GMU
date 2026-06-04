@@ -32,7 +32,7 @@ class OrderForm
                             ->required(),
                         TextInput::make('tracking_number')
                             ->label('Nomor Pelacakan')
-                            ->helperText('Opsional, hanya untuk status "Shipped"')
+                            ->helperText('Opsional, hanya untuk status "Dikirim"')
                             ->default(null),
                         Select::make('payment_status')
                             ->label('Status Pembayaran')

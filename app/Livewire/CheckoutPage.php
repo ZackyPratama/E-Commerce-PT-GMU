@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Mail\OrderConfirmation;
 use App\Models\Address;
 use App\Models\Coupon;
 use App\Models\Order;
@@ -14,7 +15,7 @@ use Livewire\Component;
 use Midtrans\Config;
 use Midtrans\Snap;
 
-#[Layout('components.layouts.front-end-layout')]
+#[Layout('components.layouts.front-end-layout', ['title' => 'Checkout'])]
 class CheckoutPage extends Component
 {
     public $cart = [];
@@ -36,6 +37,7 @@ class CheckoutPage extends Component
     public $paymentMethod = 'midtrans'; // default payment method
     public $customerNotes = '';
 
+    // Load cart data dan data pelanggan saat komponen di-mount
     public function mount()
     {
         $this->cart = session()->get('cart', []);
@@ -44,21 +46,25 @@ class CheckoutPage extends Component
             return redirect()->route('cart.index');
         }
 
-        // Pre-fill with customer data
+        // Load customer data jika sudah login
         $customer = auth('customer')->user();
         $this->full_name = $customer->name;
         $this->phone = $customer->phone ?? '';
 
-        // Load default address if exists
+        // load alamat pengiriman default jika ada
         $defaultAddress = $customer->addresses()->where('is_default', true)->first();
         if ($defaultAddress) {
             $this->selectedAddressId = $defaultAddress->id;
         }
     }
+
+    // Fungsi pilih alamat pengiriman
     public function selectAddress($addressId)
     {
         $this->selectedAddressId = $addressId;
     }
+
+    // Fungsi kupon 
     public function applyCoupon()
     {
         $coupon = Coupon::where('code', strtoupper($this->couponCode))
@@ -66,12 +72,12 @@ class CheckoutPage extends Component
             ->first();
 
         if (!$coupon) {
-            session()->flash('coupon_error', 'Coupon tidak valid atau sudah kadaluarsa');
+            session()->flash('coupon_error', 'Kupon tidak valid atau sudah kadaluarsa');
             return;
         }
 
         if (!$coupon->canBeUsedByCustomer(auth('customer')->id())) {
-            session()->flash('coupon_error', 'Anda telah menggunakan coupon ini sebelumnya.');
+            session()->flash('coupon_error', 'Anda telah menggunakan kupon ini sebelumnya.');
             return;
         }
 
@@ -79,12 +85,14 @@ class CheckoutPage extends Component
         session()->flash('coupon_success', 'Kupon berhasil diterapkan! Anda mendapatkan diskon ' . $coupon->discount_amount . '%.');
     }
 
+    // Hapus kupon yang telah dipakai
     public function removeCoupon()
     {
         $this->appliedCoupon = null;
         $this->couponCode = '';
     }
 
+    // alur langkah checkout
     public function nextStep()
     {
         if ($this->step === 1) {
@@ -95,6 +103,7 @@ class CheckoutPage extends Component
         }
     }
 
+    // back ke langkah sebelumnya
     public function previousStep()
     {
         if ($this->step > 1) {
@@ -104,227 +113,271 @@ class CheckoutPage extends Component
 
     // Validasi alamat pengiriman (modif solve error )
     protected function validateAddress()
-{
-    $customer = auth('customer')->user();
-    $hasAddresses = $customer->addresses()->exists();
+    {
+        $customer = auth('customer')->user();
+        $hasAddresses = $customer->addresses()->exists();
 
-    if (!$this->useExistingAddress || !$hasAddresses) {
-        $this->validate([
-            'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'address_line_1' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'postal_code' => 'required|string|max:20',
-            'country' => 'required|string|max:2',
-        ]);
-    } else {
-        $this->validate([
-            'selectedAddressId' => [
-                'required',
-                \Illuminate\Validation\Rule::exists('addresses', 'id')->where(function ($query) use ($customer) {
-                    $query->where('customer_id', $customer->id);
-                }),
-            ],
-        ], [
-            'selectedAddressId.required' => 'Silakan pilih alamat pengiriman.',
-            'selectedAddressId.exists' => 'Alamat pengiriman tidak valid.',
-        ]);
-    }
-}
-
-    public function placeOrder(){
-    try {
-        DB::beginTransaction();
-        // Get shipping address
-        if ($this->useExistingAddress && $this->selectedAddressId) {
-            $address = Address::find($this->selectedAddressId);
-            $shippingData = [
-                'shipping_full_name' => $address->full_name,
-                'shipping_phone' => $address->phone,
-                'shipping_address_line_1' => $address->address_line_1,
-                'shipping_address_line_2' => $address->address_line_2,
-                'shipping_city' => $address->city,
-                'shipping_state' => $address->state,
-                'shipping_postal_code' => $address->postal_code,
-                'shipping_country' => $address->country,
-            ];
+        if (!$this->useExistingAddress || !$hasAddresses) {
+            $this->validate([
+                'full_name' => 'required|string|max:255',
+                'phone' => 'required|string|max:255',
+                'address_line_1' => 'required|string|max:255',
+                'city' => 'required|string|max:255',
+                'postal_code' => 'required|string|max:20',
+                'country' => 'required|string|max:2',
+            ]);
         } else {
-            $shippingData = [
-                'shipping_full_name' => $this->full_name,
-                'shipping_phone' => $this->phone,
-                'shipping_address_line_1' => $this->address_line_1,
-                'shipping_address_line_2' => $this->address_line_2,
-                'shipping_city' => $this->city,
-                'shipping_state' => $this->state,
-                'shipping_postal_code' => $this->postal_code,
-                'shipping_country' => $this->country,
-            ];
-        }
-
-        // Calculate totals
-        $subtotal = $this->getSubtotal();
-        $shippingCost = $this->getShippingCost();
-        $discountAmount = $this->getDiscountAmount();
-        $taxAmount = 0; // You can calculate tax here if needed
-        $total = $subtotal + $shippingCost + $taxAmount - $discountAmount;
-
-        //create order
-        $order = Order::create([
-            'customer_id' => auth('customer')->id(),
-            'coupon_id' => $this->appliedCoupon?->id,
-            'subtotal' => $subtotal,
-            'discount_amount' => $discountAmount,
-            'shipping_cost' => $shippingCost,
-            'tax_amount' => $taxAmount,
-            'total' => $total,
-            'payment_method' => $this->paymentMethod,
-            'payment_status' => 'pending',
-            'status' => 'pending',
-            'customer_notes' => $this->customerNotes,
-        ] + $shippingData);
-
-        // create order items
-        foreach ($this->cart as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['product_id'],
-                'product_variant_id' => $item['variant_id'],
-                'product_name' => $item['name'],
-                'product_sku' => $item['variant_id'] 
-                    ? \App\Models\ProductVariant::find($item['variant_id'])->sku 
-                    : \App\Models\Product::find($item['product_id'])->sku,
-                'variant_name' => $item['variant_name'],
-                'price' => $item['price'],
-                'quantity' => $item['quantity'],
-                'subtotal' => $item['price'] * $item['quantity'],
+            $this->validate([
+                'selectedAddressId' => [
+                    'required',
+                    \Illuminate\Validation\Rule::exists('addresses', 'id')->where(function ($query) use ($customer) {
+                        $query->where('customer_id', $customer->id);
+                    }),
+                ],
+            ], [
+                'selectedAddressId.required' => 'Silakan pilih alamat pengiriman.',
+                'selectedAddressId.exists' => 'Alamat pengiriman tidak valid.',
             ]);
         }
+    }
 
-        //record the coupon usage
-        if ($this->appliedCoupon) {
-            $this->appliedCoupon->usages()->create([
+    // Fungsi untuk memproses pesanan
+    public function placeOrder()
+    {
+        try {
+            DB::beginTransaction();
+            // ambil data alamat pengiriman yang sudah ada atau data alamat yang diinputkan baru
+            if ($this->useExistingAddress && $this->selectedAddressId) {
+                $address = Address::find($this->selectedAddressId);
+                $shippingData = [
+                    'shipping_full_name' => $address->full_name,
+                    'shipping_phone' => $address->phone,
+                    'shipping_address_line_1' => $address->address_line_1,
+                    'shipping_address_line_2' => $address->address_line_2,
+                    'shipping_city' => $address->city,
+                    'shipping_state' => $address->state,
+                    'shipping_postal_code' => $address->postal_code,
+                    'shipping_country' => $address->country,
+                ];
+            } else {
+                // Simpan alamat baru jika tidak menggunakan alamat yang sudah ada
+                $shippingData = [
+                    'shipping_full_name' => $this->full_name,
+                    'shipping_phone' => $this->phone,
+                    'shipping_address_line_1' => $this->address_line_1,
+                    'shipping_address_line_2' => $this->address_line_2,
+                    'shipping_city' => $this->city,
+                    'shipping_state' => $this->state,
+                    'shipping_postal_code' => $this->postal_code,
+                    'shipping_country' => $this->country,
+                ];
+            }
+
+            // kalkulasi total belanja
+            $subtotal = $this->getSubtotal();
+            $shippingCost = $this->getShippingCost();
+            $discountAmount = $this->getDiscountAmount();
+            $taxAmount = 0; // You can calculate tax here if needed
+            $total = $subtotal + $shippingCost + $taxAmount - $discountAmount;
+
+            //buat pesanan baru
+            $order = Order::create([
                 'customer_id' => auth('customer')->id(),
-                'order_id' => $order->id,
-            ]);
+                'coupon_id' => $this->appliedCoupon?->id,
+                'subtotal' => $subtotal,
+                'discount_amount' => $discountAmount,
+                'shipping_cost' => $shippingCost,
+                'tax_amount' => $taxAmount,
+                'total' => $total,
+                'payment_method' => $this->paymentMethod,
+                'payment_status' => 'pending',
+                'status' => 'pending',
+                'customer_notes' => $this->customerNotes,
+            ] + $shippingData);
+
+            // buat order item untuk setiap produk di keranjang
+            foreach ($this->cart as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'product_variant_id' => $item['variant_id'],
+                    'product_name' => $item['name'],
+                    'product_sku' => $item['variant_id']
+                        ? \App\Models\ProductVariant::find($item['variant_id'])->sku
+                        : \App\Models\Product::find($item['product_id'])->sku,
+                    'variant_name' => $item['variant_name'],
+                    'price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'subtotal' => $item['price'] * $item['quantity'],
+                ]);
+            }
+
+            // rekam jejak penggunaan kupon jika ada
+            if ($this->appliedCoupon) {
+                $this->appliedCoupon->usages()->create([
+                    'customer_id' => auth('customer')->id(),
+                    'order_id' => $order->id,
+                ]);
+            }
+
+            DB::commit();
+
+            //kirim email konfirmasi pesanan ke pelanggan
+            Mail::to($order->customer->email)
+                ->queue(new OrderConfirmation($order));
+
+            //proccessing the payment
+            if ($this->paymentMethod === 'midtrans') {
+                return $this->processMidtransPayment($order);
+            } else {
+                // Cash on delivery
+                session()->forget('cart');
+                return redirect()->route('customer.orders.show', $order->id)
+                    ->with('success', 'Pemesanan berhasil dilakukan!');
+            }
+
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', 'Error saat memproses pesanan: ' . $e->getMessage());
+            return;
         }
-
-        DB::commit();
-
-        //send order confirmation
-        Mail::to($order->customer->email)
-        ->queue(new OrderConfirmation($order));
-
-        //proccessing the payment
-        if ($this->paymentMethod === 'midtrans') {
-            return $this->processMidtransPayment($order);
-        } else {
-            // Cash on delivery
-            session()->forget('cart');
-            return redirect()->route('customer.orders.show', $order->id)
-                ->with('success', 'Pemesanan berhasil dilakukan!');
-        }
-
-        
-    } catch (\Exception $e) {
-        DB::rollBack();
-        session()->flash('error','Error saat memproses pesanan: '. $e->getMessage());
-        return;
     }
-}
-
     public function processMidtransPayment($order)
     {
         try {
-            // Set Midtrans config
+            // Configure Midtrans
             Config::$serverKey = config('services.midtrans.server_key');
             Config::$clientKey = config('services.midtrans.client_key');
             Config::$isProduction = config('services.midtrans.is_production');
-            Config::$isSanitized = true;
-            Config::$is3ds = true;
+            Config::$isSanitized = config('services.midtrans.is_sanitized', true);
+            Config::$is3ds = config('services.midtrans.is_3ds', true);
 
-            // Prepare transaction data
-            $transactionDetails = [
-                'order_id' => 'ORDER-' . $order->id . '-' . time(),
-                'gross_amount' => (int) $order->total, // Jangan dikalikan 100, langsung rupiah
-            ];
-
-            $customerDetails = [
-                'first_name' => auth('customer')->user()->name,
-                'email' => auth('customer')->user()->email,
-                'phone' => auth('customer')->user()->phone,
-            ];
-
-            // Prepare item details
+            // prepare item details from order items
             $items = [];
-            foreach ($order->items as $item) {
+            $calculatedGrossAmount = 0;
+
+            foreach ($order->Items as $item) {
+                $unitPrice = (int) round($item->price);
+                $quantity = (int) $item->quantity;
+
                 $items[] = [
-                    'id' => $item->product_id,
-                    'price' => (int) $item->price,
-                    'quantity' => $item->quantity,
-                    'name' => $item->product_name . ($item->variant_name ? ' - ' . $item->variant_name : ''),
+                    'id' => 'item-' . $item->id, // Gunakan ID OrderItem agar unik
+                    'price' => $unitPrice,
+                    'quantity' => $quantity,
+                    'name' => substr($item->product_name, 0, 50), // Limit 50 karakter
                 ];
+                $calculatedGrossAmount += ($unitPrice * $quantity);
             }
 
-            // Add shipping
+            // Add shipping cost
             if ($order->shipping_cost > 0) {
+                $shipping = (int) round($order->shipping_cost);
                 $items[] = [
-                    'id' => 'shipping',
-                    'price' => (int) $order->shipping_cost,
+                    'id' => 'SHIPPING',
+                    'price' => $shipping,
                     'quantity' => 1,
-                    'name' => 'Ongkir',
+                    'name' => 'Ongkos Kirim',
                 ];
+                $calculatedGrossAmount += $shipping;
             }
 
-            // Menambahkan kalkulasi pajak ke item details Midtrans
+            // Add tax
             if ($order->tax_amount > 0) {
+                $tax = (int) round($order->tax_amount);
                 $items[] = [
-                    'id' => 'tax',
-                    'price' => (int) $order->tax_amount,
+                    'id' => 'TAX',
+                    'price' => $tax,
                     'quantity' => 1,
                     'name' => 'Pajak',
                 ];
+                $calculatedGrossAmount += $tax;
             }
 
-            // Menambahkan kalkulasi diskon ke item details Midtrans
+            // Add discount (sebagai item negatif)
             if ($order->discount_amount > 0) {
+                $discount = (int) round($order->discount_amount);
                 $items[] = [
-                    'id' => 'discount',
-                    'price' => -((int) $order->discount_amount), // Harus menggunakan nilai minus
+                    'id' => 'DISCOUNT',
+                    'price' => -$discount,
                     'quantity' => 1,
-                    'name' => 'Diskon Kupon',
+                    'name' => 'Diskon',
                 ];
+                $calculatedGrossAmount -= $discount;
             }
 
-            // Prepare Midtrans transaction
-            $snapTransaction = [
-                'transaction_details' => $transactionDetails,
-                'customer_details' => $customerDetails,
-                'item_details' => $items,
-                'callbacks' => [
-                    'finish' => route('checkout.success', $order->id),
-                    'error' => route('checkout.error', $order->id),
-                    'pending' => route('checkout.pending', $order->id),
+            // Generate unique Midtrans order ID
+            $midtransOrderId = $order->order_number . '-' . time();
+
+            // Prepare transaction details dengan total yang sudah dihitung ulang
+            $transactionDetails = [
+                'order_id' => $midtransOrderId,
+                'gross_amount' => $calculatedGrossAmount,
+            ];
+
+            // Prepare customer details
+            $customerDetails = [
+                'first_name' => $order->customer->name,
+                'email' => $order->customer->email,
+                'phone' => $order->shipping_phone,
+                'billing_address' => [
+                    'first_name' => $order->shipping_full_name,
+                    'email' => $order->customer->email,
+                    'phone' => $order->shipping_phone,
+                    'address' => $order->shipping_address_line_1,
+                    'city' => $order->shipping_city,
+                    'postal_code' => $order->shipping_postal_code,
+                    'country_code' => strlen($order->shipping_country) === 3 ? $order->shipping_country : 'IDN',
+                ],
+                'shipping_address' => [
+                    'first_name' => $order->shipping_full_name,
+                    'email' => $order->customer->email,
+                    'phone' => $order->shipping_phone,
+                    'address' => $order->shipping_address_line_1,
+                    'city' => $order->shipping_city,
+                    'postal_code' => $order->shipping_postal_code,
+                    'country_code' => strlen($order->shipping_country) === 3 ? $order->shipping_country : 'IDN',
                 ],
             ];
 
-            // Generate Snap Token
-            $snapToken = Snap::getSnapToken($snapTransaction);
+            // Prepare transaction data
+            $transactionData = [
+                'transaction_details' => $transactionDetails,
+                'item_details' => $items,
+                'customer_details' => $customerDetails,
+                'credit_card' => [
+                    'secure' => true,
+                ],
+            ];
 
-            // Save snap token to database 
+            // Generate Snap token
+            $snapToken = Snap::getSnapToken($transactionData);
+
+            // Store snap token and midtrans order ID in database
             $order->update([
+                'total' => $calculatedGrossAmount, // update total agar sesuai dengan yang dikirim ke Midtrans
                 'snap_token' => $snapToken,
-                'midtrans_order_id' => $transactionDetails['order_id'],
+                'midtrans_order_id' => $midtransOrderId,
             ]);
 
-            // Redirect to payment page
+            // Clear cart from session
+            session()->forget('cart');
+
+            // Return redirect to payment page
             return redirect()->route('checkout.payment', $order->id);
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Gagal membuat transaksi: ' . $e->getMessage());
-            return redirect()->back();
+            \Log::error('Midtrans Snap token generation error', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            session()->flash('error', 'Gagal membuat token pembayaran. Silakan coba lagi.');
+            return;
         }
     }
 
+    // kalkulasi total belanja 
     protected function getSubtotal()
     {
         return array_sum(array_map(function ($item) {
@@ -332,6 +385,7 @@ class CheckoutPage extends Component
         }, $this->cart));
     }
 
+    // kalkulasi ongkir
     protected function getShippingCost()
     {
         $subtotal = $this->getSubtotal();
@@ -344,24 +398,28 @@ class CheckoutPage extends Component
 
         return $flatRate;
     }
+
+    // kalkulasi diskon
     protected function getDiscountAmount()
     {
+        // jika tidak menggunakan kupon
         if (!$this->appliedCoupon) {
             return 0;
         }
-
+        // jika menggunakan kupon. kalkulasi diskon kupon di coupon.php
         return $this->appliedCoupon->calculateDiscount($this->getSubtotal());
     }
     public function render()
     {
         $addresses = auth('customer')->user()->addresses;
-        return view('livewire.checkout-page',[
+        return view('livewire.checkout-page', [
             'addresses' => $addresses,
             'subtotal' => $this->getSubtotal(),
             'shippingCost' => $this->getShippingCost(),
             'discountAmount' => $this->getDiscountAmount(),
             'total' => $this->getSubtotal() + $this->getShippingCost() - $this->getDiscountAmount(),
-        ])->layout('livewire.checkout-page', ['title' => 'Checkout']);
+        ]);
+
     }
 
 }

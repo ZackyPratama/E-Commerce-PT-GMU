@@ -32,8 +32,8 @@ class StatsOverview extends StatsOverviewWidget
         
 
         return [
-            Stat::make('Total Pendapatan', number_format($totalRevenue, 3))
-            ->description('Hari ini Rp. ' . number_format($todayRevenue, 3))
+            Stat::make('Total Pendapatan', number_format($totalRevenue, 0, ',', '.'))
+            ->description('Hari ini Rp. ' . number_format($todayRevenue, 0, ',', '.'))
             ->descriptionIcon('heroicon-m-arrow-trending-up')
             ->color('success'),
 

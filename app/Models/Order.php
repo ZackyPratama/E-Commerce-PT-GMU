@@ -15,79 +15,82 @@ class Order extends Model
     use HasFactory;
     //fillable attributes for mass assignment
     protected $fillable = [
-    'order_number',
-    'customer_id',
-    'coupon_id',
-    'subtotal',
-    'discount_amount',
-    'shipping_cost',
-    'tax_amount',
-    'total',
-    'shipping_full_name',
-    'shipping_phone',
-    'shipping_address_line_1',
-    'shipping_address_line_2',
-    'shipping_city',
-    'shipping_state',
-    'shipping_postal_code',
-    'shipping_country',
-    'payment_method',
-    'payment_status',
-    'transaction_id',
-    'status',
-    'tracking_number',
-    'customer_notes',
-    'admin_notes',
+        'order_number',
+        'customer_id',
+        'coupon_id',
+        'subtotal',
+        'discount_amount',
+        'shipping_cost',
+        'tax_amount',
+        'total',
+        'shipping_full_name',
+        'shipping_phone',
+        'shipping_address_line_1',
+        'shipping_address_line_2',
+        'shipping_city',
+        'shipping_state',
+        'shipping_postal_code',
+        'shipping_country',
+        'payment_method',
+        'payment_status',
+        'transaction_id',
+        'status',
+        'tracking_number',
+        'customer_notes',
+        'admin_notes',
+        'snap_token',
+        'midtrans_order_id',
+        'payment_completed_at',
 
     ];
 
     // Scope to filter orders by status
     #[Scope]
-    protected function ofStatus(Builder $query,string $status) : void
+    protected function ofStatus(Builder $query, string $status): void
     {
         $query->where('status', $status);
     }
 
     // Scope to filter orders by payment status
     #[Scope]
-    protected function paymentStatus(Builder $query,string $status) : void
+    protected function paymentStatus(Builder $query, string $status): void
     {
         $query->where('payment_status', $status);
     }
 
     //Scope to only pending orders
     #[Scope]
-    protected function pending(Builder $query) : void
+    protected function pending(Builder $query): void
     {
         $query->where('status', 'pending');
     }
 
     // Scope to only processing orders
     #[Scope]
-    protected function processing(Builder $query) : void
+    protected function processing(Builder $query): void
     {
         $query->where('status', 'processing');
     }
 
     // Scope to only shipped orders
     #[Scope]
-    protected function shipped(Builder $query) : void
-    {     
+    protected function shipped(Builder $query): void
+    {
         $query->where('status', 'shipped');
     }
 
     // Scope to only delivered orders
-    #[Scope]    
-    protected function delivered(Builder $query) : void
+    #[Scope]
+    protected function delivered(Builder $query): void
     {
         $query->where('status', 'delivered');
     }
 
     // Helper Method
 
-    public function getShippingAddressAttribute() : string
+    public function getShippingAddressAttribute(): string
     {
-        return implode(', ', array_filter( [
+        return implode(', ', array_filter([
             $this->shipping_address_line_1,
             $this->shipping_address_line_2,
             $this->shipping_city,
@@ -97,7 +100,7 @@ class Order extends Model
         ]));
     }
 
-    public function updateStatus($newStatus, $notes = null, $userid = null) 
+    public function updateStatus($newStatus, $notes = null, $userid = null)
     {
         $this->update(['status' => $newStatus]);
 
@@ -117,13 +120,13 @@ class Order extends Model
     // relationship to coupon
     public function coupon()
     {
-        return $this->belongsTo(Coupon::class); 
-    } 
+        return $this->belongsTo(Coupon::class);
+    }
 
     // relationship to order items
     public function Items()
     {
-        return $this->hasMany(OrderItem::class);    
+        return $this->hasMany(OrderItem::class);
     }
 
     // relationship to order status history
@@ -153,6 +156,6 @@ class Order extends Model
             // order confirmation email logic can be added here soon
         });
     }
-    
+
 
 }

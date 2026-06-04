@@ -47,7 +47,7 @@
                                 @if($item['variant_name'])
                                     <p class="text-sm text-gray-600 mb-2">{{ $item['variant_name'] }}</p>
                                 @endif
-                                <p class="text-lg font-bold text-blue-600">Rp {{ number_format($item['price'], 3) }}</p>
+                                <p class="text-lg font-bold text-blue-600">Rp {{ number_format($item['price'],  0, ',', '.') }}</p>
                             </div>
 
                             <!-- Quantity & Actions -->
@@ -76,7 +76,7 @@
                                 </div>
 
                                 <p class="text-lg font-bold text-gray-900">
-                                    Rp {{ number_format($item['price'] * $item['quantity'], 3) }}
+                                    Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
                                 </p>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Subtotal ({{ count($cart) }} items)</span>
-                            <span class="font-medium">Rp {{ number_format($this->subtotal, 3) }}</span>
+                            <span class="font-medium">Rp {{ number_format($this->subtotal, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Ongkos Kirim</span>
@@ -117,7 +117,7 @@
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-semibold">Total</span>
                             <span class="text-2xl font-bold text-blue-600">
-                                Rp {{ number_format($this->subtotal, 3) }}
+                                Rp {{ number_format($this->subtotal, 0, ',', '.') }}
                             </span>
                         </div>
                     </div>
