@@ -44,6 +44,9 @@ class OrderConfirmation extends Mailable implements ShouldQueue
     {
         return new Content(
             view: 'mail.order-confirmation',
+            with: [
+                'order' => $this->order,
+            ],
         );
     }
 

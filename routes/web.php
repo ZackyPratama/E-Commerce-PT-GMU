@@ -8,7 +8,7 @@ use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\OrderDetails;
 use App\Livewire\Customer\Profile;
 use App\Livewire\Homepage;
-use App\Livewire\Orders;
+use App\Livewire\Customer\Orders;
 use App\Livewire\ProductDetails;
 use App\Livewire\ProductListing;
 use Illuminate\Support\Facades\Route;
