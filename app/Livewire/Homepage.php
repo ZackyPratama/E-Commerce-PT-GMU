@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
+use App\Models\Product;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -11,6 +13,29 @@ class Homepage extends Component
 {
     public function render()
     {
-        return view('livewire.homepage');
+        $featuredProducts = Product::active()
+        ->featured()
+        ->inStock()
+        ->with(['category', 'brand', 'primaryImage'])
+        ->limit(4)
+        ->get();
+
+        $categories = Category::active()
+        ->sorted()
+        ->withCount('products')
+        ->limit(6)
+        ->get();
+        
+        $newArrivals = Product::active()
+        ->inStock()
+        ->with(['category', 'brand', 'primaryImage'])
+        ->latest()
+        ->limit(4)
+        ->get(); 
+
+        return view('livewire.homepage',['featuredProducts' => $featuredProducts,
+            'categories' => $categories,
+            'newArrivals' => $newArrivals,
+        ]);
     }
 }
