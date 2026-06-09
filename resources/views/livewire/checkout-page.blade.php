@@ -253,8 +253,7 @@
                             </label>
 
                             <label class="relative cursor-pointer">
-                                <input type="radio" wire:model="paymentMethod" value="cash_on_delivery"
-                                    class="peer sr-only">
+                                <input type="radio" wire:model="paymentMethod" value="cod" class="peer sr-only">
                                 <div
                                     class="border-2 rounded-lg p-4 peer-checked:border-blue-600 peer-checked:bg-indigo-50 hover:border-indigo-400 transition">
                                     <div class="flex items-center justify-between">

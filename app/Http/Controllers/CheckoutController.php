@@ -39,8 +39,9 @@ class CheckoutController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Update order status jika belum success
-        if ($order->payment_status !== 'completed') {
+        
+        // Update order status jika bukan COD dan belum dibayar (untuk menangani redirect sukses dari Midtrans)
+        if ($order->payment_method !== 'cod' && $order->payment_status !== 'paid') {
             $order->update([
                 'payment_status' => 'paid',
                 'status' => 'processing',

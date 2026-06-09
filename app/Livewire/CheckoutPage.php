@@ -232,8 +232,7 @@ class CheckoutPage extends Component
             } else {
                 // Cash on delivery
                 session()->forget('cart');
-                return redirect()->route('customer.orders.show', $order->id)
-                    ->with('success', 'Pemesanan berhasil dilakukan!');
+                return redirect()->route('checkout.success', $order->id);
             }
 
 

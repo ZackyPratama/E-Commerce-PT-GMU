@@ -34,7 +34,7 @@ class Product extends Model
         'weight',
         'meta_title',
         'meta_description',
-        'view_count',
+        'views_count',
     ];
 
     protected function casts(): array
