@@ -38,7 +38,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Total Harga</p>
-                            <p class="font-bold text-gray-900 text-lg">Rp {{ number_format($order->total, 3) }}</p>
+                            <p class="font-bold text-gray-900 text-lg">Rp {{ number_format($order->total, 0, ',', '.') }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Status Pembayaran</p>
@@ -72,7 +72,7 @@
                                     @endif
                                     <p class="text-sm text-gray-600">Qty: {{ $item->quantity }}</p>
                                 </div>
-                                <p class="font-semibold text-gray-900">Rp {{ number_format($item->subtotal, 3) }}</p>
+                                <p class="font-semibold text-gray-900">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                             </div>
                         @endforeach
                         @if($order->items->count() > 3)

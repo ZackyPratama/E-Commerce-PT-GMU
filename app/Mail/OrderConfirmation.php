@@ -32,7 +32,7 @@ class OrderConfirmation extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(config('mail.from.address'), config('mail.from.name')), 
+            from: new Address(config('mail.from.address'), config('mail.from.name')),
             subject: 'Konfirmasi Pesanan - ' . $this->order->order_number,
         );
     }
@@ -44,9 +44,6 @@ class OrderConfirmation extends Mailable implements ShouldQueue
     {
         return new Content(
             view: 'mail.order-confirmation',
-            with: [
-                'order' => $this->order,
-            ],
         );
     }
 

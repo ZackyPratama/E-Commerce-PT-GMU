@@ -82,7 +82,8 @@
     <div class="content">
         <p>Hai {{ $order->customer->name }},</p>
 
-        <p>kami telah menerima pesanan Anda dan sedang mempersiapkannya. Kami akan memberi tahu Anda ketika pesanan sudah dalam perjalanan!</p>
+        <p>kami telah menerima pesanan Anda dan sedang mempersiapkannya. Kami akan memberi tahu Anda ketika pesanan
+            sudah dalam perjalanan!</p>
 
         <div class="order-details">
             <h2 style="margin-top: 0;">Detail Pesanan</h2>
@@ -100,8 +101,8 @@
                 @if($item->variant_name)
                     <br><span style="color: #6b7280;">{{ $item->variant_name }}</span>
                 @endif
-                <br>Jumlah: {{ $item->quantity }} × ${{ number_format($item->price, 0, ',', '.') }}
-                <br><strong>${{ number_format($item->subtotal, 0, ',', '.') }}</strong>
+                <br>Jumlah: {{ $item->quantity }} × Rp{{ number_format($item->price, 0, ',', '.') }}
+                <br><strong>Rp{{ number_format($item->subtotal, 0, ',', '.') }}</strong>
             </div>
         @endforeach
 
@@ -109,19 +110,20 @@
             <table width="100%" style="margin-top: 10px;">
                 <tr>
                     <td>Subtotal:</td>
-                    <td align="right">${{ number_format($order->subtotal, 0, ',', '.') }}</td>
+                    <td align="right">Rp{{ number_format($order->subtotal, 0, ',', '.') }}</td>
                 </tr>
                 @if($order->discount_amount > 0)
                     <tr>
                         <td style="color: #059669;">Diskon:</td>
-                        <td align="right" style="color: #059669;">-${{ number_format($order->discount_amount, 0, ',', '.') }}</td>
+                        <td align="right" style="color: #059669;">
+                            -Rp{{ number_format($order->discount_amount, 0, ',', '.') }}</td>
                     </tr>
                 @endif
                 <tr>
                     <td>Pengiriman:</td>
                     <td align="right">
                         @if($order->shipping_cost > 0)
-                            ${{ number_format($order->shipping_cost, 0, ',', '.') }}
+                            Rp{{ number_format($order->shipping_cost, 0, ',', '.') }}
                         @else
                             <span style="color: #059669;">FREE</span>
                         @endif
@@ -130,7 +132,7 @@
                 @if($order->tax_amount > 0)
                     <tr>
                         <td>Pajak:</td>
-                        <td align="right">${{ number_format($order->tax_amount, 0, ',', '.') }}</td>
+                        <td align="right">Rp{{ number_format($order->tax_amount, 0, ',', '.') }}</td>
                     </tr>
                 @endif
             </table>
@@ -140,7 +142,8 @@
             <table width="100%">
                 <tr>
                     <td><strong style="font-size: 18px;">Total:</strong></td>
-                    <td align="right"><strong style="font-size: 24px;">${{ number_format($order->total, 0, ',', '.') }}</strong>
+                    <td align="right"><strong
+                            style="font-size: 24px;">Rp{{ number_format($order->total, 0, ',', '.') }}</strong>
                     </td>
                 </tr>
             </table>
