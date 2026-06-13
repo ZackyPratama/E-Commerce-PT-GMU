@@ -13,16 +13,16 @@
         <div class="max-w-md w-full">
             <!-- Logo -->
             <div class="text-center mb-8">
-                <a href="{{ route('home') }}" class="text-3xl font-bold text-blue-600">
-                    {{ config('app.name') }}
+                <a href="{{ route('home') }}" class="inline-block">
+                    <img src="{{ asset('images/logorm.webp') }}" alt="{{ config('app.name') }}" class="h-20 w-auto mx-auto">
                 </a>
                 <h2 class="mt-6 text-3xl font-bold text-gray-900">
-                    Create your account
+                    Daftar Akun Baru
                 </h2>
                 <p class="mt-2 text-sm text-gray-600">
-                    Already have an account?
+                    Sudah punya akun?
                     <a href="{{ route('login') }}" class="font-medium text-blue-600 hover:text-indigo-500">
-                        Sign in
+                        Masuk
                     </a>
                 </p>
             </div>
@@ -35,7 +35,7 @@
                     <!-- Name -->
                     <div class="mb-4">
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Full Name
+                            Nama Lengkap
                         </label>
                         <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -47,7 +47,7 @@
                     <!-- Email -->
                     <div class="mb-4">
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Email Address
+                            Email
                         </label>
                         <input id="email" type="email" name="email" value="{{ old('email') }}" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -59,7 +59,7 @@
                     <!-- Phone -->
                     <div class="mb-4">
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                            Phone Number (Optional)
+                            Nomor Telepon (Optional)
                         </label>
                         <input id="phone" type="tel" name="phone" value="{{ old('phone') }}"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -83,7 +83,7 @@
                     <!-- Password Confirmation -->
                     <div class="mb-4">
                         <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
-                            Confirm Password
+                            Konfirmasi Password
                         </label>
                         <input id="password_confirmation" type="password" name="password_confirmation" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -95,10 +95,10 @@
                             <input type="checkbox" required
                                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-indigo-500 mt-1">
                             <span class="ml-2 text-sm text-gray-600">
-                                I agree to the
-                                <a href="#" class="text-blue-600 hover:text-indigo-500">Terms and Conditions</a>
-                                and
-                                <a href="#" class="text-blue-600 hover:text-indigo-500">Privacy Policy</a>
+                                Saya setuju dengan
+                                <a href="#" class="text-blue-600 hover:text-indigo-500">Syarat dan Ketentuan</a>
+                                dan
+                                <a href="#" class="text-blue-600 hover:text-indigo-500">Kebijakan Privasi</a>
                             </span>
                         </label>
                     </div>
@@ -106,26 +106,16 @@
                     <!-- Submit Button -->
                     <button type="submit"
                         class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold">
-                        Create Account
+                        Buat Akun
                     </button>
                 </form>
 
-                <!-- Benefits -->
-                <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
-                    <p class="text-sm font-medium text-indigo-900 mb-2">Why join us?</p>
-                    <ul class="text-sm text-indigo-700 space-y-1">
-                        <li>✓ Track your orders easily</li>
-                        <li>✓ Save multiple addresses</li>
-                        <li>✓ Get exclusive member offers</li>
-                        <li>✓ Faster checkout process</li>
-                    </ul>
-                </div>
-            </div>
+
 
             <!-- Back to Home -->
             <p class="mt-6 text-center text-sm text-gray-600">
                 <a href="{{ route('home') }}" class="font-medium text-blue-600 hover:text-indigo-500">
-                    ← Back to Home
+                    ← Kembali ke Beranda
                 </a>
             </p>
         </div>

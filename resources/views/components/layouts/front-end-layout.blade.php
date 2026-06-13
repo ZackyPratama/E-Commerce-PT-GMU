@@ -26,61 +26,68 @@
 
 </head>
 
-<body class="bg-gray-50 antialiased">
+<body class="bg-[#F1F3F5] text-[#0F1419] font-['Geist',sans-serif] antialiased">
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+    <header class="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <!-- Top Bar -->
-            <div class="flex items-center justify-between py-4">
+            <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">
+                <div class="flex items-center shrink-0">
+                    <a href="{{ route('home') }}"
+                        class="text-2xl font-bold tracking-tight text-gray-900 hover:opacity-80 transition-opacity">
                         {{ config('app.name', 'E-Commerce') }}
                     </a>
                 </div>
 
                 <!-- Search Bar (Desktop) -->
-                <div class="hidden flex-1 mx-8 lg:block">
+                <div class="hidden flex-1 max-w-2xl mx-12 lg:block">
                     <livewire:search-bar />
                 </div>
 
                 <!-- Right Side -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-6 shrink-0">
                     @auth('customer')
-                        <a href="{{ route('customer.dashboard') }}" class="text-gray-700 hover:text-blue-600">
+                        <a href="{{ route('customer.dashboard') }}"
+                            class="text-gray-500 hover:text-gray-900 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600">
-                            Login
+                        <a href="{{ route('login') }}"
+                            class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                            Masuk
                         </a>
                     @endauth
 
                     <!-- Cart -->
-                    <livewire:cart-icon />
+                    <div class="text-gray-500 hover:text-gray-900 transition-colors">
+                        <livewire:cart-icon />
+                    </div>
                 </div>
             </div>
 
             <!-- Navigation -->
-            <nav class="border-t py-4">
-                <ul class="flex items-center gap-8">
+            <nav class="hidden md:block pb-4">
+                <ul class="flex items-center gap-8 text-sm">
                     <li>
-                        <a href="{{ route('home') }}" class="text-gray-700 hover:text-blue-600 font-medium">
-                            Home
+                        <a href="{{ route('home') }}"
+                            class="text-gray-500 hover:text-gray-900 font-medium transition-colors">
+                            Beranda
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('products.index') }}" class="text-gray-700 hover:text-blue-600 font-medium">
+                        <a href="{{ route('products.index') }}"
+                            class="text-gray-500 hover:text-gray-900 font-medium transition-colors">
                             Shop
                         </a>
                     </li>
                     @foreach(\App\Models\Category::active()->sorted()->limit(5)->get() as $category)
                         <li>
                             <a href="{{ route('products.index', ['category' => $category->slug]) }}"
-                                class="text-gray-700 hover:text-blue-600">
+                                class="text-gray-500 hover:text-gray-900 transition-colors">
                                 {{ $category->name }}
                             </a>
                         </li>
@@ -98,43 +105,60 @@
 
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="bg-[#0A2540] mt-[64px]">
+        <div class="mx-auto max-w-7xl px-4 sm:px-[16px] lg:px-[32px] py-[48px]">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-[32px]">
                 <div>
-                    <h3 class="text-lg font-bold mb-4">{{ config('app.name') }}</h3>
-                    <p class="text-gray-400">Your one-stop shop for quality products.</p>
+                    <h3 class="text-[1.125rem] font-semibold text-[#FFFFFF] tracking-[-0.02em] mb-[16px]">
+                        {{ config('app.name') }}
+                    </h3>
+                    <p class="text-[#F1F3F5] text-[0.95rem] leading-[1.55]">Toko serba ada untuk produk berkualitas.</p>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{{ route('products.index') }}" class="text-gray-400 hover:text-white">Shop</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Customer Service</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Info</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Returns</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">My Account</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{{ route('customer.dashboard') }}"
-                                class="text-gray-400 hover:text-white">Dashboard</a></li>
-                        <li><a href="{{ route('customer.orders') }}" class="text-gray-400 hover:text-white">Orders</a>
+                    <h4 class="text-[1.125rem] font-semibold text-[#FFFFFF] mb-[16px]">Tautan Cepat</h4>
+                    <ul class="space-y-[8px]">
+                        <li><a href="{{ route('products.index') }}"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Belanja</a>
                         </li>
-                        <li><a href="{{ route('customer.profile') }}" class="text-gray-400 hover:text-white">Profile</a>
+                        <li><a href="#"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Tentang
+                                Kami</a></li>
+                        <li><a href="#"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Kontak</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-[1.125rem] font-semibold text-[#FFFFFF] mb-[16px]">Layanan Pelanggan</h4>
+                    <ul class="space-y-[8px]">
+                        <li><a href="#"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Info
+                                Pengiriman</a></li>
+                        <li><a href="#"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Pengembalian</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">FAQ</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-[1.125rem] font-semibold text-[#FFFFFF] mb-[16px]">Akun</h4>
+                    <ul class="space-y-[8px]">
+                        <li><a href="{{ route('customer.dashboard') }}"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Dashboard</a>
+                        </li>
+                        <li><a href="{{ route('customer.orders') }}"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Pesanan</a>
+                        </li>
+                        <li><a href="{{ route('customer.profile') }}"
+                                class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Profil</a>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
+            <div class="border-t border-[#F1F3F5]/20 mt-[32px] pt-[32px] text-center text-[#F1F3F5] text-[0.95rem]">
+                <p>&copy; {{ date('Y') }} {{ config('app.name') }}. Hak cipta dilindungi.</p>
             </div>
         </div>
     </footer>
