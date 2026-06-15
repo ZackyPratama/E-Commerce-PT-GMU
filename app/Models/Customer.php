@@ -25,6 +25,12 @@ class Customer extends Authenticable
         'is_active',
         'remember_token',
         'email_verified_at',
+        'type',
+        'company_name',
+        'company_registration_number',
+        'b2b_status',
+        'approved_at',
+        'rejection_reason',
     ];
 
     protected $hidden = [
@@ -40,6 +46,7 @@ class Customer extends Authenticable
             'password' => 'hashed',
             'date_of_birth' => 'date',
             'is_active' => 'boolean',
+            'approved_at' => 'datetime',
         ];
     }
 
@@ -47,6 +54,33 @@ class Customer extends Authenticable
     protected function active(Builder $builder)
     {
         $builder->where('is_active', true);
+    }
+
+    // B2B methods
+    public function isB2B(): bool
+    {
+        return $this->type === 'b2b';
+    }
+
+    public function isB2BApproved(): bool
+    {
+        return $this->type === 'b2b' && $this->b2b_status === 'approved';
+    }
+
+    public function isB2BPending(): bool
+    {
+        return $this->type === 'b2b' && $this->b2b_status === 'pending';
+    }
+
+    public function isB2BRejected(): bool
+    {
+        return $this->type === 'b2b' && $this->b2b_status === 'rejected';
+    }
+
+    #[Scope()]
+    protected function b2bPending(Builder $builder)
+    {
+        $builder->where('type', 'b2b')->where('b2b_status', 'pending');
     }
 
      // Relationships

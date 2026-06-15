@@ -13,9 +13,13 @@ class ProductDetails extends Component
     public $selectedVariant = null;
     public $quantity = 1;
     public $selectedImage = null;
+    public $isB2BApproved = false;
 
     public function mount($slug)
     {
+        $customer = auth()->guard('customer')->user();
+        $this->isB2BApproved = $customer && $customer->isB2BApproved();
+
         $this->product = Product::where('slug',$slug)
         ->with(['category','brand','images','variants','approvedReviews.customer'])
         ->firstOrFail();
@@ -29,70 +33,92 @@ class ProductDetails extends Component
         if($this->product->has_variants && $this->product->variants->isNotEmpty()){
             $this->selectedVariant = $this->product->variants->first()->id;
         }
+    }
+
+    public function getSelectedVariantModel()
+    {
+        if ($this->selectedVariant) {
+            return $this->product->variants->find($this->selectedVariant);
+        }
+        return null;
+    }
+
+    public function getEffectivePriceProperty()
+    {
+        $variant = $this->getSelectedVariantModel();
+        if ($variant) {
+            return $variant->getPriceForCustomer(auth()->guard('customer')->user());
+        }
+        return $this->product->getPriceForCustomer(auth()->guard('customer')->user());
+    }
+
+    public function selectVariant($variantId){
+        $this->selectedVariant = $variantId; 
+    } 
+
+    public function selectImage($imagePath){
+        $this->selectedImage = $imagePath;
+    }
+
+    public function incrementQuantity(){
+        $this->quantity++;
+    }
+
+    public function decrementQuantity(){
+        if($this->quantity > 1){
+            $this->quantity--;
+        }
+    }
+
+    // function untuk menambahkan produk ke keranjang belanja.
+    public function addToCart(){
+        if($this->product->has_variants && !$this->selectedVariant){
+            $this->dispatch('error', ['message' => 'Mohon pilih varian produk terlebih dahulu.']);
+            return;
         }
 
-        public function selectVariant($variantId){
-            $this->selectedVariant = $variantId; 
-        } 
+        $cart = session()->get('cart', []);
+        $cartKey = $this->selectedVariant ? 'variant' . $this->selectedVariant : 'product' . $this->product->id;
 
-        public function selectImage($imagePath){
-            $this->selectedImage = $imagePath;
-        }
-
-        public function incrementQuantity(){
-            $this->quantity++;
-        }
-
-        public function decrementQuantity(){
-            if($this->quantity > 1){
-                $this->quantity--;
-            }
-        }
-        // function untuk menambahkan produk ke keranjang belanja.
-        public function addToCart(){
-            if($this->product->has_variants && !$this->selectedVariant){
-                $this->dispatch('error', ['message' => 'Mohon pilih varian produk terlebih dahulu.  ']);
-                //session()->flash('error', 'Mohon pilih varian produk terlebih dahulu.');
-                return;
-            }
-
-            $cart = session()->get('cart', []);
-
-            $cartKey = $this->selectedVariant ? 'variant' . $this->selectedVariant 
-            : 'product' . $this->product->id;
-
-            if(isset($cart[$cartKey])){
-                $cart[$cartKey]['quantity'] += $this->quantity;
+        if(isset($cart[$cartKey])){
+            $cart[$cartKey]['quantity'] += $this->quantity;
+        }else{
+            if($this->selectedVariant){
+                $variant = $this->product->variants->find($this->selectedVariant);
+                $price = $this->isB2BApproved && $variant->b2b_price ? (float) $variant->b2b_price : (float) $variant->price;
+                $b2bPrice = $this->isB2BApproved ? ($variant->b2b_price ? (float) $variant->b2b_price : null) : null;
+                $cart[$cartKey] = [
+                    'product_id' => $this->product->id,
+                    'variant_id' => $variant->id,
+                    'name' => $this->product->name, 
+                    'variant_name' => $variant->name,
+                    'price' => $price,
+                    'b2b_price' => $b2bPrice,
+                    'image' => $this->selectedImage,
+                    'quantity' => $this->quantity,
+                ];
             }else{
-                if($this->selectedVariant){
-                    $variant = $this->product->variants->find($this->selectedVariant);
-                    $cart[$cartKey] = [
-                        'product_id' => $this->product->id,
-                        'variant_id' => $variant->id,
-                        'name' => $this->product->name, 
-                        'variant_name' => $variant->name,
-                        'price' => $variant->price,
-                        'image' => $this->selectedImage,
-                        'quantity' => $this->quantity,
-                    ];
-                }else{
-                    $cart[$cartKey] = [
-                        'product_id' => $this->product->id,
-                        'variant_id' => null,
-                        'name' => $this->product->name, 
-                        'variant_name' => null,
-                        'price' => $this->product->price,
-                        'image' => $this->selectedImage,
-                        'quantity' => $this->quantity,
-                    ];
-                }
+                $price = $this->isB2BApproved && $this->product->b2b_price ? (float) $this->product->b2b_price : (float) $this->product->price;
+                $b2bPrice = $this->isB2BApproved ? ($this->product->b2b_price ? (float) $this->product->b2b_price : null) : null;
+                $cart[$cartKey] = [
+                    'product_id' => $this->product->id,
+                    'variant_id' => null,
+                    'name' => $this->product->name, 
+                    'variant_name' => null,
+                    'price' => $price,
+                    'b2b_price' => $b2bPrice,
+                    'image' => $this->selectedImage,
+                    'quantity' => $this->quantity,
+                ];
             }
-
-            session()->put('cart', $cart);
-            $this->dispatch('cart-updated');
-
-            session()->flash('success', 'Produk berhasil ditambahkan ke keranjang!');
         }
+
+        session()->put('cart', $cart);
+        $this->dispatch('cart-updated');
+
+        session()->flash('success', 'Produk berhasil ditambahkan ke keranjang!');
+    }
+
     public function render()
     {
         $relatedProducts = Product::active()
@@ -104,7 +130,6 @@ class ProductDetails extends Component
         return view('livewire.product-details', [
             'relatedProducts' => $relatedProducts,
             'title' => $this->product->name . ' - ' . config('app.name')
-            
         ]);
     }
 }

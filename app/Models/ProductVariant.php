@@ -19,6 +19,8 @@ class ProductVariant extends Model
         'options',
         'price',
         'compare_price',
+        'b2b_price',
+        'minimum_order_quantity',
         'stock_quantity',
         'stock_status',
         'is_active',
@@ -31,6 +33,8 @@ class ProductVariant extends Model
             'options' => 'array',
             'price' => 'decimal:2',
             'compare_price' => 'decimal:2',
+            'b2b_price' => 'decimal:2',
+            'minimum_order_quantity' => 'integer',
             'stock_quantity' => 'integer',
             'is_active' => 'boolean',
             'sort_order' => 'integer',
@@ -68,6 +72,22 @@ class ProductVariant extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);  
+    }
+
+    public function getPriceForCustomer(?Customer $customer): ?float
+    {
+        if ($customer && $customer->isB2BApproved() && $this->b2b_price) {
+            return (float) $this->b2b_price;
+        }
+        return (float) $this->price;
+    }
+
+    public function getB2bFormattedPriceAttribute(): ?string
+    {
+        if (!$this->b2b_price) {
+            return null;
+        }
+        return 'Rp ' . number_format($this->b2b_price, 0, ',', '.');
     }
 
     // Helper method to get discount percentage

@@ -10,8 +10,12 @@ use Livewire\Component;
 class CartPage extends Component
 {
     public $cart;
+    public $isB2BApproved = false;
+
     public function mount()
     {
+        $customer = auth()->guard('customer')->user();
+        $this->isB2BApproved = $customer && $customer->isB2BApproved();
         $this->loadCart();
     }
 
@@ -55,6 +59,20 @@ class CartPage extends Component
         session()->flash('success', 'Keranjang berhasil dikosongkan.');
     }
 
+    public function submitRfq()
+    {
+        if (!$this->isB2BApproved || empty($this->cart)) {
+            return;
+        }
+
+        session()->put('pending_rfq', [
+            'items' => $this->cart,
+            'submitted_at' => now()->toDateTimeString(),
+        ]);
+
+        session()->flash('success', 'Permintaan penawaran berhasil dikirim! Admin akan segera mereview dan memberikan harga. Anda dapat melihat status di menu Riwayat Penawaran (akan tersedia segera).');
+    }
+
     #[Computed]
     public function subtotal()
     {
@@ -62,6 +80,7 @@ class CartPage extends Component
             return $item['price'] * $item['quantity'];
         }, $this->cart));
     }
+
     public function render()
     {
         return view('livewire.cart-page', ['title' => 'Keranjang Belanja']);

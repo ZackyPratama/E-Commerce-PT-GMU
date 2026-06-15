@@ -30,7 +30,7 @@
             </div>
 
             <!-- Login Form -->
-            <div class="bg-[#FFFFFF] p-[24px] sm:p-[32px] rounded-[16px] shadow-sm border border-[#4A5568]/10">
+            <div class="bg-[#FFFFFF] p-6 sm:p-8 rounded-2xl shadow-sm border border-[#4A5568]/10">
                 @if (session('status'))
                     <div
                         class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-[10px] text-[0.95rem]">
@@ -69,7 +69,7 @@
                     <div class="flex items-center justify-between mb-8">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" name="remember"
-                                class="w-4 h-4 text-[#0F1419] border-[#4A5568]/30 rounded-[4px] focus:ring-[#0F1419]">
+                                class="w-4 h-4 text-[#0F1419] border-[#4A5568]/30 rounded-sm focus:ring-[#0F1419]">
                             <span class="text-[0.95rem] text-[#4A5568]">Ingat saya</span>
                         </label>
 
@@ -81,7 +81,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit"
-                        class="w-full bg-[#2C5EF5] text-[#FFFFFF] py-[12px] px-[20px] rounded-[10px] font-medium text-[0.95rem] hover:opacity-90 transition-opacity">
+                        class="w-full bg-[#2C5EF5] text-[#FFFFFF] py-3 px-5 rounded-[10px] font-medium text-[0.95rem] hover:opacity-90 transition-opacity">
                         Masuk
                     </button>
                 </form>

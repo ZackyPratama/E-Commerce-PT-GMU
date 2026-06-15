@@ -99,33 +99,64 @@
 
                     <!-- Price -->
                     <div class="mb-6">
-                        @if($selectedVariant)
-                            @php
-                                $variant = $product->variants->find($selectedVariant);
-                            @endphp
-                            <div class="flex items-center gap-3">
-                                <span class="text-3xl font-bold text-gray-900">Rp
-                                    {{ number_format($variant->price, 0, ',', '.') }}</span>
-                                @if($variant->compare_price)
-                                    <span class="text-xl text-gray-500 line-through">Rp
-                                        {{ number_format($variant->compare_price, 0, ',', '.') }}</span>
-                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-semibold">
-                                        -{{ $variant->discount_percentage }}%
-                                    </span>
-                                @endif
-                            </div>
+                        @if($isB2BApproved)
+                            @if($selectedVariant)
+                                @php
+                                    $variant = $product->variants->find($selectedVariant);
+                                @endphp
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    @if($variant->b2b_price)
+                                        <span class="text-3xl font-bold text-[#2C5EF5]">Rp
+                                            {{ number_format($variant->b2b_price, 0, ',', '.') }}</span>
+                                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">Grosir</span>
+                                    @else
+                                        <span class="text-xl text-gray-500">Hubungi kami untuk harga grosir</span>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    @if($product->b2b_price)
+                                        <span class="text-3xl font-bold text-[#2C5EF5]">Rp
+                                            {{ number_format($product->b2b_price, 0, ',', '.') }}</span>
+                                        @if($product->compare_price && $product->compare_price > $product->b2b_price)
+                                            <span class="text-xl text-gray-500 line-through">Rp
+                                                {{ number_format($product->compare_price, 0, ',', '.') }}</span>
+                                        @endif
+                                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">Grosir</span>
+                                    @else
+                                        <span class="text-xl text-gray-500">Hubungi kami untuk harga grosir</span>
+                                    @endif
+                                </div>
+                            @endif
                         @else
-                            <div class="flex items-center gap-3">
-                                <span class="text-3xl font-bold text-gray-900">Rp
-                                    {{ number_format($product->price, 0, ',', '.') }}</span>
-                                @if($product->compare_price)
-                                    <span class="text-xl text-gray-500 line-through">Rp
-                                        {{ number_format($product->compare_price, 0, ',', '.') }}</span>
-                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-semibold">
-                                        -{{ $product->discount_percentage }}%
-                                    </span>
-                                @endif
-                            </div>
+                            @if($selectedVariant)
+                                @php
+                                    $variant = $product->variants->find($selectedVariant);
+                                @endphp
+                                <div class="flex items-center gap-3">
+                                    <span class="text-3xl font-bold text-gray-900">Rp
+                                        {{ number_format($variant->price, 0, ',', '.') }}</span>
+                                    @if($variant->compare_price)
+                                        <span class="text-xl text-gray-500 line-through">Rp
+                                            {{ number_format($variant->compare_price, 0, ',', '.') }}</span>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-semibold">
+                                            -{{ $variant->discount_percentage }}%
+                                        </span>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="flex items-center gap-3">
+                                    <span class="text-3xl font-bold text-gray-900">Rp
+                                        {{ number_format($product->price, 0, ',', '.') }}</span>
+                                    @if($product->compare_price)
+                                        <span class="text-xl text-gray-500 line-through">Rp
+                                            {{ number_format($product->compare_price, 0, ',', '.') }}</span>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-semibold">
+                                            -{{ $product->discount_percentage }}%
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
                         @endif
                     </div>
 
@@ -143,8 +174,14 @@
                                     <button wire:click="selectVariant({{ $variant->id }})"
                                         class="border-2 rounded-lg p-3 text-left transition {{ $selectedVariant === $variant->id ? 'border-blue-600 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400' }}">
                                         <p class="font-medium text-gray-900">{{ $variant->name }}</p>
-                                        <p class="text-sm text-gray-600">Rp {{ number_format($variant->price, 0, ',', '.') }}
-                                        </p>
+                                        @if($isB2BApproved && $variant->b2b_price)
+                                            <p class="text-sm text-[#2C5EF5] font-medium">Rp {{ number_format($variant->b2b_price, 0, ',', '.') }}
+                                                <span class="text-xs text-gray-500">(Grosir)</span>
+                                            </p>
+                                        @else
+                                            <p class="text-sm text-gray-600">Rp {{ number_format($variant->price, 0, ',', '.') }}
+                                            </p>
+                                        @endif
                                         <p
                                             class="text-xs {{ $variant->stock_status === 'in_stock' ? 'text-green-600' : 'text-red-600' }}">
                                             {{ $variant->stock_status === 'in_stock' ? 'Tersedia' : 'Stok Habis' }}

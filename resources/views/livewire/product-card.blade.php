@@ -65,24 +65,42 @@
 
             <!-- Price -->
             <div class="flex items-center gap-2">
-                <span class="text-xl font-bold text-gray-900">
-                    Rp {{ number_format($product->price, 0, ',', '.') }}
-                </span>
-                @if($product->compare_price)
-                    <span class="text-sm text-gray-500 line-through">
-                        Rp {{ number_format($product->compare_price, 0, ',', '.') }}
+                @if($isB2BApproved && $product->b2b_price)
+                    <span class="text-xl font-bold text-[#2C5EF5]">
+                        Rp {{ number_format($product->b2b_price, 0, ',', '.') }}
                     </span>
+                    @if($product->compare_price && $product->compare_price > $product->b2b_price)
+                        <span class="text-sm text-gray-500 line-through">
+                            Rp {{ number_format($product->compare_price, 0, ',', '.') }}
+                        </span>
+                    @endif
+                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">
+                        Grosir
+                    </span>
+                @else
+                    <span class="text-xl font-bold text-gray-900">
+                        Rp {{ number_format($product->price, 0, ',', '.') }}
+                    </span>
+                    @if($product->compare_price)
+                        <span class="text-sm text-gray-500 line-through">
+                            Rp {{ number_format($product->compare_price, 0, ',', '.') }}
+                        </span>
+                    @endif
                 @endif
             </div>
         </div>
     </a>
 
-    <!-- Add to Cart Button -->
+    <!-- Action Button -->
     @if($product->stock_status === 'in_stock')
         <div class="p-4 pt-0">
             <button wire:click="addToCart"
                 class="w-full cursor-pointer bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-medium">
-                Keranjang
+                @if($isB2BApproved)
+                    Tambah ke Keranjang
+                @else
+                    Keranjang
+                @endif
             </button>
         </div>
     @else

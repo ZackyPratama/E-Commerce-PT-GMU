@@ -47,7 +47,14 @@
                                 @if($item['variant_name'])
                                     <p class="text-sm text-gray-600 mb-2">{{ $item['variant_name'] }}</p>
                                 @endif
-                                <p class="text-lg font-bold text-blue-600">Rp {{ number_format($item['price'],  0, ',', '.') }}</p>
+                                <p class="text-lg font-bold {{ $isB2BApproved ? 'text-[#2C5EF5]' : 'text-blue-600' }}">
+                                    Rp {{ number_format($item['price'], 0, ',', '.') }}
+                                </p>
+                                @if($isB2BApproved && isset($item['b2b_price']) && $item['b2b_price'])
+                                    <span class="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium mt-1">
+                                        Harga Grosir
+                                    </span>
+                                @endif
                             </div>
 
                             <!-- Quantity & Actions -->
@@ -123,17 +130,27 @@
                     </div>
 
                     @auth('customer')
-                        <a href="{{ route('checkout') }}"
-                            class="block w-full bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-indigo-700 transition font-semibold">
-                            Lanjut ke Checkout
-                        </a>
+                        @if($isB2BApproved)
+                            <button wire:click="submitRfq"
+                                class="block w-full bg-[#2C5EF5] text-white text-center py-3 px-6 rounded-lg hover:opacity-90 transition font-semibold">
+                                Ajukan Penawaran
+                            </button>
+                            <p class="text-xs text-gray-500 text-center mt-2">
+                                Permintaan penawaran akan direview oleh admin
+                            </p>
+                        @else
+                            <a href="{{ route('checkout') }}"
+                                class="block w-full bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-indigo-700 transition font-semibold">
+                                Lanjut ke Checkout
+                            </a>
+                        @endif
                     @else
                         <a href="{{ route('login') }}"
                             class="block w-full bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-indigo-700 transition font-semibold">
-                            Login untuk melanjutkan Checkout
+                            Login untuk melanjutkan
                         </a>
                         <p class="text-sm text-gray-600 text-center mt-3">
-                            Or <a href="{{ route('register') }}" class="text-blue-600 hover:text-indigo-700">Buat Akun Baru</a>
+                            Atau <a href="{{ route('register') }}" class="text-blue-600 hover:text-indigo-700">Buat Akun Baru</a>
                         </p>
                     @endauth
 

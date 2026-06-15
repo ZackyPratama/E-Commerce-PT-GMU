@@ -118,6 +118,22 @@ class ProductForm
                                             ->helperText('Harga beli produk dari supplier (untuk menghitung margin keuntungan)')
                                             ->prefix('Rp'),
                                     ])->columns(2),
+                                Section::make('Harga Grosir (B2B)')
+                                    ->schema([
+                                        TextInput::make('b2b_price')
+                                            ->label('Harga B2B')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->step(0.01)
+                                            ->helperText('Harga khusus untuk pelanggan B2B (grosir). Biarkan kosong jika tidak ada harga khusus.')
+                                            ->prefix('Rp'),
+                                        TextInput::make('minimum_order_quantity')
+                                            ->label('Minimum Order (MOQ)')
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->default(1)
+                                            ->helperText('Jumlah minimum pembelian untuk produk ini'),
+                                    ])->columns(2),
                                 Section::make('Stok Produk')
                                     ->schema([
                                         Toggle::make('manage_stock')
@@ -233,6 +249,18 @@ class ProductForm
                                                             ->step(0.01)
                                                             // ->helperText('Harga produk sebelum diskon')
                                                             ->prefix('Rp'),
+                                                        TextInput::make('b2b_price')
+                                                            ->label('Harga B2B')
+                                                            ->numeric()
+                                                            ->minValue(0)
+                                                            ->step(0.01)
+                                                            ->helperText('Harga grosir B2B')
+                                                            ->prefix('Rp'),
+                                                        TextInput::make('minimum_order_quantity')
+                                                            ->label('MOQ')
+                                                            ->numeric()
+                                                            ->minValue(1)
+                                                            ->default(1),
                                                         TextInput::make('stock_quantity')
                                                             ->label('Jumlah Stok')
                                                             ->required()

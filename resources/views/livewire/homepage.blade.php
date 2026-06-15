@@ -203,7 +203,7 @@
                 </div>
 
                 <!-- Contact Form Card -->
-                <div class="bg-white rounded-[16px] p-8 border border-[#4A5568]/10 shadow-sm">
+                <div class="bg-white rounded-2xl p-8 border border-[#4A5568]/10 shadow-sm">
                     <form action="#" class="space-y-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-2">

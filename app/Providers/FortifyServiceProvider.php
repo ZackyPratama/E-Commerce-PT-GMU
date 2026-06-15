@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -31,14 +33,31 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->configureRegisterResponse();
 
         // configure authentication to use customer guard
         Fortify::authenticateUsing(function(Request $request){
             $customer = Customer::where('email', $request->email)->first();
 
-            if ($customer && Hash::check($request->password, $customer->password)) {
-                return $customer;
+            if (!$customer || !Hash::check($request->password, $customer->password)) {
+                return;
             }
+
+            // Cek status B2B
+            if ($customer->isB2BPending()) {
+                throw ValidationException::withMessages([
+                    'email' => 'Akun perusahaan Anda masih menunggu verifikasi admin. Silakan coba lagi setelah akun diaktifkan.',
+                ]);
+            }
+
+            if ($customer->isB2BRejected()) {
+                $reason = $customer->rejection_reason ? ' Alasan: ' . $customer->rejection_reason : '';
+                throw ValidationException::withMessages([
+                    'email' => 'Akun perusahaan Anda ditolak.' . $reason,
+                ]);
+            }
+
+            return $customer;
         });
     }
 
@@ -78,6 +97,31 @@ class FortifyServiceProvider extends ServiceProvider
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
+        });
+    }
+
+    /**
+     * Configure custom register response.
+     */
+    private function configureRegisterResponse(): void
+    {
+        $this->app->singleton(RegisterResponse::class, function () {
+            return new class implements RegisterResponse {
+                public function toResponse($request)
+                {
+                    $customer = auth()->guard('customer')->user();
+
+                    if ($customer && $customer->isB2BPending()) {
+                        auth()->guard('customer')->logout();
+                        $request->session()->invalidate();
+                        $request->session()->regenerateToken();
+
+                        return redirect()->route('login')->with('status', 'Pendaftaran berhasil! Akun perusahaan Anda sedang menunggu verifikasi admin. Kami akan memberitahu Anda setelah akun diaktifkan.');
+                    }
+
+                    return redirect()->intended(config('fortify.home'));
+                }
+            };
         });
     }
 }

@@ -56,6 +56,16 @@ class ProductsTable
                     //add currency formatting for IDR
                     ->money('IDR', locale: 'id')
                     ->sortable(),
+                TextColumn::make('b2b_price')
+                    ->label('Harga B2B')
+                    ->money('IDR', locale: 'id')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('minimum_order_quantity')
+                    ->label('MOQ')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('stock_quantity')
                     ->numeric()
                     ->sortable()
