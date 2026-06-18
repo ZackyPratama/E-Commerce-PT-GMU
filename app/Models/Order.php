@@ -41,7 +41,7 @@ class Order extends Model
         'snap_token',
         'midtrans_order_id',
         'payment_completed_at',
-
+        'rfq_id',
     ];
 
     // Scope to filter orders by status
@@ -121,6 +121,12 @@ class Order extends Model
     public function coupon()
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    // relationship to RFQ
+    public function rfq()
+    {
+        return $this->belongsTo(RFQ::class);
     }
 
     // relationship to order items

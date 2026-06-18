@@ -2,6 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Mail\RFQSubmitted;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -65,12 +70,45 @@ class CartPage extends Component
             return;
         }
 
-        session()->put('pending_rfq', [
-            'items' => $this->cart,
-            'submitted_at' => now()->toDateTimeString(),
+        $customer = auth()->guard('customer')->user();
+
+        $rfq = \App\Models\RFQ::create([
+            'customer_id' => $customer->id,
+            'status' => 'submitted',
+            'customer_notes' => 'Permintaan penawaran dari keranjang belanja',
+            'subtotal' => $this->subtotal,
+            'total' => $this->subtotal,
         ]);
 
-        session()->flash('success', 'Permintaan penawaran berhasil dikirim! Admin akan segera mereview dan memberikan harga. Anda dapat melihat status di menu Riwayat Penawaran (akan tersedia segera).');
+        foreach ($this->cart as $cartKey => $item) {
+            $product = Product::find($item['product_id']);
+            $variant = null;
+            if (!empty($item['variant_id'])) {
+                $variant = ProductVariant::find($item['variant_id']);
+            }
+
+            \App\Models\RFQItem::create([
+                'rfq_id' => $rfq->id,
+                'product_id' => $item['product_id'],
+                'product_variant_id' => $item['variant_id'] ?? null,
+                'quantity' => $item['quantity'],
+                'customer_requested_price' => $item['b2b_price'] ?? $item['price'],
+                'subtotal' => $item['price'] * $item['quantity'],
+            ]);
+        }
+
+        session()->forget('cart');
+        $this->loadCart();
+        $this->dispatch('cart-updated');
+
+        $adminEmails = User::role('super_admin')->pluck('email');
+        foreach ($adminEmails as $adminEmail) {
+            Mail::to($adminEmail)->queue(new RFQSubmitted($rfq));
+        }
+
+        session()->flash('success', 'Permintaan penawaran berhasil dikirim! Admin akan segera mereview harga. Lihat status di menu Permintaan Penawaran.');
+
+        return redirect()->route('customer.rfqs.show', $rfq->id);
     }
 
     #[Computed]

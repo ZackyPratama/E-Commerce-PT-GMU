@@ -109,6 +109,11 @@ class Customer extends Authenticable
         return $this->hasMany(CouponUsage::class);
     }
 
+    public function rfqs()
+    {
+        return $this->hasMany(RFQ::class);
+    }
+
     //helper method
     public function getTotalSpentAttribute()
     {

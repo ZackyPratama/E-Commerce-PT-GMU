@@ -48,13 +48,36 @@
                 <!-- Right Side -->
                 <div class="flex items-center gap-6 shrink-0">
                     @auth('customer')
-                        <a href="{{ route('customer.dashboard') }}"
-                            class="text-gray-500 hover:text-gray-900 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </a>
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" @click.away="open = false"
+                                class="text-gray-500 hover:text-gray-900 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </button>
+                            <div x-show="open" x-cloak
+                                class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
+                                @click="open = false">
+                                <a href="{{ route('customer.dashboard') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Dashboard</a>
+                                <a href="{{ route('customer.orders') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Pesanan</a>
+                                @if(auth('customer')->user()->isB2BApproved())
+                                    <a href="{{ route('customer.rfqs.index') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Permintaan Penawaran</a>
+                                @endif
+                                <a href="{{ route('customer.profile') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profil</a>
+                                <hr class="my-1 border-gray-100">
+                                <a href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                    class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                                    @csrf
+                                </form>
+                            </div>
+                        </div>
                     @else
                         <a href="{{ route('login') }}"
                             class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
@@ -151,6 +174,13 @@
                         <li><a href="{{ route('customer.orders') }}"
                                 class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Pesanan</a>
                         </li>
+                        @auth('customer')
+                            @if(auth('customer')->user()->isB2BApproved())
+                                <li><a href="{{ route('customer.rfqs.index') }}"
+                                        class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Permintaan Penawaran</a>
+                                </li>
+                            @endif
+                        @endauth
                         <li><a href="{{ route('customer.profile') }}"
                                 class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Profil</a>
                         </li>

@@ -7,6 +7,8 @@ use App\Livewire\CheckoutPage;
 use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\OrderDetails;
 use App\Livewire\Customer\Profile;
+use App\Livewire\Customer\RFQDetail;
+use App\Livewire\Customer\RFQList;
 use App\Livewire\Homepage;
 use App\Livewire\Customer\Orders;
 use App\Livewire\ProductDetails;
@@ -32,6 +34,10 @@ Route::middleware(['auth:customer'])->group(function () {
     Route::get('/my-account/orders', Orders::class)->name('customer.orders');
     Route::get('/my-account/orders/{id}', OrderDetails::class)->name('customer.orders.show');
     Route::get('/my-account/profile', Profile::class)->name('customer.profile');
+
+    // RFQ Routes
+    Route::get('/my-account/rfqs', RFQList::class)->name('customer.rfqs.index');
+    Route::get('/my-account/rfqs/{id}', RFQDetail::class)->name('customer.rfqs.show');
 
     // Checkout payment routes
     Route::get('/checkout/payment/{order}', [CheckoutController::class, 'showPayment'])->name('checkout.payment');

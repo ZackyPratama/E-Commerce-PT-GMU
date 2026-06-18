@@ -7,7 +7,7 @@
         </div>
 
         {{-- stats --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-{{ $isB2B ? '4' : '3' }} gap-6 mb-8">
             {{-- Total Order --}}
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex items-center justify-between">
@@ -55,15 +55,49 @@
                     </div>
                 </div>
             </div>
+            @if($isB2B)
+                {{-- RFQ Stats --}}
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Permintaan Penawaran</p>
+                            <p class="text-3xl font-bold text-gray-900">{{ $stats['rfq_count'] }}</p>
+                            @if($stats['rfq_pending'] > 0)
+                                <p class="text-xs text-yellow-600 mt-1">{{ $stats['rfq_pending'] }} menunggu review</p>
+                            @endif
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {{-- quick actions --}}
+                    {{-- quick actions --}}
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-                    {{-- My Orders --}}
                     <div class="space-y-3">
+                        @if($isB2B)
+                            <a href="{{ route('customer.rfqs.index') }}"
+                                class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition group">
+                                <div
+                                    class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900">Permintaan Penawaran</p>
+                                    <p class="text-sm text-gray-600">Lihat status RFQ</p>
+                                </div>
+                            </a>
+                        @endif
+                        {{-- My Orders --}}
                         <a href="{{ route('customer.orders') }}"
                             class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition group">
                             <div
@@ -196,6 +230,38 @@
                         </div>
                     @endif
                 </div>
+
+                {{-- Recent RFQs for B2B --}}
+                @if($isB2B && $recentRfqs->count() > 0)
+                    <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-gray-900">Permintaan Penawaran Terbaru</h2>
+                            <a href="{{ route('customer.rfqs.index') }}"
+                                class="text-blue-600 hover:text-indigo-700 font-medium text-sm">
+                                Lihat Semua →
+                            </a>
+                        </div>
+                        <div class="space-y-4">
+                            @foreach($recentRfqs as $rfq)
+                                <a href="{{ route('customer.rfqs.show', $rfq->id) }}"
+                                    class="block border rounded-lg p-4 hover:border-blue-600 hover:shadow-md transition">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-semibold text-gray-900">{{ $rfq->rfq_number }}</p>
+                                            <p class="text-sm text-gray-600">{{ $rfq->created_at->format('d M Y, H:i') }}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-gray-900">Rp {{ number_format($rfq->total ?: $rfq->subtotal, 0, ',', '.') }}</p>
+                                            <span class="inline-block px-2 py-1 text-xs rounded {{ $rfq->status === 'quoted' ? 'bg-green-100 text-green-800' : ($rfq->status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                                {{ $rfq->status }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
