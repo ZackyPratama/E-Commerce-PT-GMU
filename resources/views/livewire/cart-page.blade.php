@@ -131,13 +131,19 @@
 
                     @auth('customer')
                         @if($isB2BApproved)
-                            <button wire:click="submitRfq"
-                                class="block w-full bg-[#2C5EF5] text-white text-center py-3 px-6 rounded-lg hover:opacity-90 transition font-semibold">
-                                Ajukan Penawaran
-                            </button>
-                            <p class="text-xs text-gray-500 text-center mt-2">
-                                Permintaan penawaran akan direview oleh admin
-                            </p>
+                            <div class="space-y-2">
+                                <button wire:click="checkout"
+                                    class="block w-full bg-[#2C5EF5] text-white text-center py-3 px-6 rounded-lg hover:opacity-90 transition font-semibold">
+                                    Beli Langsung
+                                </button>
+                                <button wire:click="submitRfq"
+                                    class="block w-full bg-white text-[#2C5EF5] border-2 border-[#2C5EF5] text-center py-3 px-6 rounded-lg hover:bg-blue-50 transition font-semibold">
+                                    Ajukan Penawaran
+                                </button>
+                                <p class="text-xs text-gray-500 text-center mt-1">
+                                    Langsung checkout dengan harga grosir, atau ajukan penawaran untuk negosiasi harga
+                                </p>
+                            </div>
                         @else
                             <a href="{{ route('checkout') }}"
                                 class="block w-full bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-indigo-700 transition font-semibold">

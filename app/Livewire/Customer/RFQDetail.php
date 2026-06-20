@@ -140,6 +140,8 @@ class RFQDetail extends Component
 
             $midtransOrderId = $order->order_number . '-' . time();
 
+            $companyName = $order->customer->company_name ?? $order->customer->name;
+
             $transactionData = [
                 'transaction_details' => [
                     'order_id' => $midtransOrderId,
@@ -147,9 +149,23 @@ class RFQDetail extends Component
                 ],
                 'item_details' => $items,
                 'customer_details' => [
-                    'first_name' => $order->customer->name,
+                    'first_name' => $companyName,
                     'email' => $order->customer->email,
                     'phone' => $order->shipping_phone,
+                ],
+                'enabled_payments' => [
+                    'bca_va', 'mandiri_va', 'bni_va', 'bri_va', 'permata_va', 'cimb_va', 'other_va',
+                ],
+                'bank_transfer' => [
+                    'va_number' => '',
+                    'free_text' => [
+                        'enquiry' => [
+                            [
+                                'title' => 'Nama Perusahaan',
+                                'description' => $companyName,
+                            ],
+                        ],
+                    ],
                 ],
                 'credit_card' => ['secure' => true],
             ];

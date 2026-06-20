@@ -20,7 +20,7 @@ class Orders extends Component
     public function render()
     {
         $query = auth('customer')->user()->orders()
-        ->with(['orderItems.product'])
+        ->with(['items.product'])
         ->latest();
 
         if ($this->statusFilter) {

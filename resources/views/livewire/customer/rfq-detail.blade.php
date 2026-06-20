@@ -206,10 +206,16 @@
                 </div>
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Dikonversi ke Pesanan</h2>
                 <p class="text-gray-600 mb-6">RFQ ini telah dikonversi menjadi pesanan.</p>
-                <a href="{{ route('customer.orders.show', $rfq->order->id) }}"
-                    class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
-                    Lihat Pesanan
-                </a>
+                <div class="flex items-center justify-center gap-3">
+                    <a href="{{ route('customer.orders.show', $rfq->order->id) }}"
+                        class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                        Lihat Pesanan
+                    </a>
+                    <a href="{{ route('customer.orders.invoice', $rfq->order->id) }}"
+                        class="inline-block bg-white text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition font-semibold">
+                        Download Invoice
+                    </a>
+                </div>
             </div>
         @endif
 

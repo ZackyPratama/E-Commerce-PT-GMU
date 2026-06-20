@@ -39,6 +39,9 @@ Route::middleware(['auth:customer'])->group(function () {
     Route::get('/my-account/rfqs', RFQList::class)->name('customer.rfqs.index');
     Route::get('/my-account/rfqs/{id}', RFQDetail::class)->name('customer.rfqs.show');
 
+    // Invoice download
+    Route::get('/my-account/orders/{order}/invoice', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('customer.orders.invoice');
+
     // Checkout payment routes
     Route::get('/checkout/payment/{order}', [CheckoutController::class, 'showPayment'])->name('checkout.payment');
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');

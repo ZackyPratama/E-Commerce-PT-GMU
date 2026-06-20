@@ -13,7 +13,12 @@
             </nav>
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-900">Detail Pesanan</h1>
-                <span class="px-4 py-2 rounded-lg text-sm font-semibold {{ 
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('customer.orders.invoice', $order->id) }}"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+                        Download Invoice
+                    </a>
+                    <span class="px-4 py-2 rounded-lg text-sm font-semibold {{ 
                     $order->status === 'delivered' ? 'bg-green-100 text-green-800' : 
                     ($order->status === 'cancelled' ? 'bg-red-100 text-red-800' : 
                     ($order->status === 'shipped' ? 'bg-blue-100 text-blue-800' :
@@ -104,34 +109,59 @@
                         <p>{{ $order->shipping_country }}</p>
                     </div>
                 </div>
-                {{-- Order History --}}
+                {{-- Order History Timeline --}}
                 @if($order->statusHistories->count() > 0)
                 <div class="bg-white rounded-lg shadow-sm p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Riwayat Pesanan</h2>
-                    <div class="space-y-4">
-                        @foreach($order->statusHistories as $history)
-                            <div class="flex gap-4">
-                                <div class="shrink-0">
-                                    <div class="w-10 h-10 rounded-full bg-indigo-100 text-blue-600 flex items-center justify-center">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Riwayat Pesanan</h2>
+                    <div class="relative">
+                        {{-- Vertical line --}}
+                        <div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-[#4A5568]/20"></div>
+                        <div class="space-y-6">
+                            @foreach($order->statusHistories as $history)
+                                @php
+                                    $isFirst = $loop->first;
+                                    $isLast = $loop->last;
+                                    $icons = [
+                                        'pending' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                                        'processing' => 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+                                        'shipped' => 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-1m0 0l-2 1m2-1l6 3 6-3m-6-3l6 3-6-3zm0 0l-6-3m6 3V6',
+                                        'delivered' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+                                        'cancelled' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
+                                    ];
+                                    $label = [
+                                        'pending' => 'Pesanan Dibuat',
+                                        'processing' => 'Diproses',
+                                        'shipped' => 'Dikirim',
+                                        'delivered' => 'Selesai',
+                                        'cancelled' => 'Dibatalkan',
+                                    ];
+                                    $icon = $icons[$history->status] ?? $icons['pending'];
+                                    $statusLabel = $label[$history->status] ?? ucfirst($history->status);
+                                    $isActive = !$loop->last && $order->statusHistories->get($loop->index + 1)->created_at->gt($history->created_at);
+                                @endphp
+                                <div class="flex gap-4 {{ $isLast ? '' : '' }}">
+                                    <div class="shrink-0 relative z-10">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $history->status === 'cancelled' ? 'bg-red-100' : 'bg-[#F1F3F5]' }}">
+                                            <svg class="w-5 h-5 {{ $history->status === 'cancelled' ? 'text-red-500' : 'text-[#4A5568]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 pb-2">
+                                        <div class="flex items-center justify-between">
+                                            <p class="font-semibold text-[#0F1419]">{{ $statusLabel }}</p>
+                                            <p class="text-sm text-[#4A5568] font-mono">{{ $history->created_at->format('d M Y, H:i') }}</p>
+                                        </div>
+                                        @if($history->notes)
+                                            <p class="text-sm text-[#4A5568] mt-0.5">{{ $history->notes }}</p>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <p class="font-semibold text-gray-900">{{ ucfirst($history->status) }}</p>
-                                        <p class="text-sm text-gray-500">{{ $history->created_at->format('M d, Y h:i A') }}</p>
-                                    </div>
-                                    @if($history->notes)
-                                        <p class="text-sm text-gray-600 mt-1">{{ $history->notes }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 </div>
-            @endif
+                @endif
             </div>
             {{-- Order Summary --}}
             <div>

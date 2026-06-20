@@ -339,6 +339,13 @@ class CheckoutPage extends Component
                 ],
             ];
 
+            $isB2B = $order->customer->isB2BApproved();
+
+            if ($isB2B) {
+                $companyName = $order->customer->company_name ?? $order->customer->name;
+                $customerDetails['first_name'] = $companyName;
+            }
+
             // Prepare transaction data
             $transactionData = [
                 'transaction_details' => $transactionDetails,
@@ -348,6 +355,23 @@ class CheckoutPage extends Component
                     'secure' => true,
                 ],
             ];
+
+            if ($isB2B) {
+                $transactionData['enabled_payments'] = [
+                    'bca_va', 'mandiri_va', 'bni_va', 'bri_va', 'permata_va', 'cimb_va', 'other_va',
+                ];
+                $transactionData['bank_transfer'] = [
+                    'va_number' => '',
+                    'free_text' => [
+                        'enquiry' => [
+                            [
+                                'title' => 'Nama Perusahaan',
+                                'description' => $order->customer->company_name ?? $order->customer->name,
+                            ],
+                        ],
+                    ],
+                ];
+            }
 
             // Generate Snap token
             $snapToken = Snap::getSnapToken($transactionData);

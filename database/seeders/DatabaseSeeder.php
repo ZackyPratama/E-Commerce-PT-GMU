@@ -25,8 +25,8 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             CouponSeeder::class,
             SettingSeeder::class,
-            //AddressSeeder::class,
             CustomerSeeder::class,
+            RoleAndPermissionSeeder::class,
         ]);
     }
 }

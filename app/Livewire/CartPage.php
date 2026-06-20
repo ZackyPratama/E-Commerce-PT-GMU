@@ -64,6 +64,15 @@ class CartPage extends Component
         session()->flash('success', 'Keranjang berhasil dikosongkan.');
     }
 
+    public function checkout()
+    {
+        if (!$this->isB2BApproved || empty($this->cart)) {
+            return;
+        }
+
+        return redirect()->route('checkout');
+    }
+
     public function submitRfq()
     {
         if (!$this->isB2BApproved || empty($this->cart)) {
