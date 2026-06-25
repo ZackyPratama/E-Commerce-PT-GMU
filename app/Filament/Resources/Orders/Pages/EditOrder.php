@@ -20,4 +20,13 @@ class EditOrder extends EditRecord
             RestoreAction::make(),
         ];
     }
+
+    protected function afterSave(): void
+    {
+        $record = $this->record;
+
+        if ($record->wasChanged('status')) {
+            $record->updateStatus($record->status, 'Status diperbarui oleh admin', auth()->id());
+        }
+    }
 }

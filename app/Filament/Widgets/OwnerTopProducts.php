@@ -7,6 +7,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class OwnerTopProducts extends TableWidget
@@ -19,11 +20,10 @@ class OwnerTopProducts extends TableWidget
     {
         return $table
             ->query(
-                fn(): \Illuminate\Database\Query\Builder => \App\Models\OrderItem::query()
+                fn(): Builder => OrderItem::query()
                     ->select('product_name', DB::raw('SUM(quantity) as total_qty'), DB::raw('SUM(subtotal) as total_revenue'))
                     ->whereHas('order', fn(Builder $q) => $q->where('payment_status', 'paid'))
                     ->groupBy('product_name')
-                    ->orderBy('total_qty', 'desc')
             )
             ->columns([
                 TextColumn::make('product_name')
@@ -41,6 +41,11 @@ class OwnerTopProducts extends TableWidget
             ->heading('Produk Terlaris')
             ->paginated(false)
             ->defaultSort('total_qty', 'desc');
+    }
+
+    public function getTableRecordKey(Model | array $record): string
+    {
+        return $record->product_name;
     }
 
     public static function canView(): bool

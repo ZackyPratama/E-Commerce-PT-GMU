@@ -110,58 +110,107 @@
                     </div>
                 </div>
                 {{-- Order History Timeline --}}
-                @if($order->statusHistories->count() > 0)
+                @php
+                    $statusFlow = ['pending', 'processing', 'shipped', 'delivered'];
+                    $labels = [
+                        'pending' => 'Pesanan Dibuat',
+                        'processing' => 'Diproses',
+                        'shipped' => 'Dikirim',
+                        'delivered' => 'Selesai',
+                        'cancelled' => 'Dibatalkan',
+                    ];
+                    $icons = [
+                        'pending' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                        'processing' => 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+                        'shipped' => 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-1m0 0l-2 1m2-1l6 3 6-3m-6-3l6 3-6-3zm0 0l-6-3m6 3V6',
+                        'delivered' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+                        'cancelled' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
+                    ];
+                    $completedStatuses = $order->statusHistories->pluck('status')->all();
+                    $currentStatus = $order->status;
+                    $isCancelled = $currentStatus === 'cancelled';
+                    $currentIndex = array_search($currentStatus, $statusFlow);
+                @endphp
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6">Riwayat Pesanan</h2>
                     <div class="relative">
-                        {{-- Vertical line --}}
-                        <div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-[#4A5568]/20"></div>
-                        <div class="space-y-6">
-                            @foreach($order->statusHistories as $history)
+                        <div class="absolute left-[18px] top-3 bottom-3 w-0.5 bg-[#4A5568]/20"></div>
+                        <div class="space-y-0">
+                            @foreach($statusFlow as $i => $status)
                                 @php
-                                    $isFirst = $loop->first;
-                                    $isLast = $loop->last;
-                                    $icons = [
-                                        'pending' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-                                        'processing' => 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
-                                        'shipped' => 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-1m0 0l-2 1m2-1l6 3 6-3m-6-3l6 3-6-3zm0 0l-6-3m6 3V6',
-                                        'delivered' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-                                        'cancelled' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
-                                    ];
-                                    $label = [
-                                        'pending' => 'Pesanan Dibuat',
-                                        'processing' => 'Diproses',
-                                        'shipped' => 'Dikirim',
-                                        'delivered' => 'Selesai',
-                                        'cancelled' => 'Dibatalkan',
-                                    ];
-                                    $icon = $icons[$history->status] ?? $icons['pending'];
-                                    $statusLabel = $label[$history->status] ?? ucfirst($history->status);
-                                    $isActive = !$loop->last && $order->statusHistories->get($loop->index + 1)->created_at->gt($history->created_at);
+                                    $isCompleted = in_array($status, $completedStatuses);
+                                    $isActive = $status === $currentStatus;
+                                    $isFuture = !$isCompleted && !$isActive;
+
+                                    if ($isCancelled) {
+                                        $isActive = false;
+                                        $isFuture = $i > $currentIndex;
+                                        $isCompleted = $i < $currentIndex;
+                                    }
+
+                                    $circleClass = $isCompleted ? 'bg-green-500' : ($isActive ? 'bg-blue-600 ring-4 ring-blue-100' : 'bg-gray-200');
+                                    $iconClass = $isCompleted || $isActive ? 'text-white' : 'text-gray-400';
+                                    $lineClass = $i < count($statusFlow) - 1 ? ($isCompleted ? 'bg-green-400' : 'bg-[#4A5568]/20') : '';
+                                    $textClass = $isCancelled && $i === $currentIndex ? 'text-red-600' : ($isCompleted || $isActive ? 'text-gray-900' : 'text-gray-400');
                                 @endphp
-                                <div class="flex gap-4 {{ $isLast ? '' : '' }}">
+                                <div class="flex gap-4 pb-8 relative">
                                     <div class="shrink-0 relative z-10">
-                                        <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $history->status === 'cancelled' ? 'bg-red-100' : 'bg-[#F1F3F5]' }}">
-                                            <svg class="w-5 h-5 {{ $history->status === 'cancelled' ? 'text-red-500' : 'text-[#4A5568]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}" />
+                                        <div class="w-[36px] h-[36px] rounded-full flex items-center justify-center transition-colors {{ $circleClass }}">
+                                            @if($isCompleted)
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            @else
+                                                <svg class="w-4 h-4 {{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icons[$status] }}" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 pb-2 -mt-0.5">
+                                        <div class="flex items-center justify-between">
+                                            <p class="font-semibold {{ $textClass }}">{{ $labels[$status] }}</p>
+                                            @php $historyEntry = $order->statusHistories->firstWhere('status', $status); @endphp
+                                            @if($historyEntry)
+                                                <p class="text-sm text-gray-500 font-mono">{{ $historyEntry->created_at->format('d M Y, H:i') }}</p>
+                                            @endif
+                                        </div>
+                                        @if($historyEntry && $historyEntry->notes && $historyEntry->notes !== 'Order created')
+                                            <p class="text-sm text-gray-500 mt-0.5">{{ $historyEntry->notes }}</p>
+                                        @endif
+                                    </div>
+                                    @if($i < count($statusFlow) - 1)
+                                        <div class="absolute left-[30px] top-[36px] bottom-0 w-0.5 {{ $lineClass }}"></div>
+                                    @endif
+                                </div>
+                            @endforeach
+
+                            @if($isCancelled)
+                                <div class="flex gap-4 pb-0 relative">
+                                    <div class="shrink-0 relative z-10">
+                                        <div class="w-[36px] h-[36px] rounded-full flex items-center justify-center bg-red-100">
+                                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icons['cancelled'] }}" />
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="flex-1 pb-2">
+                                    <div class="flex-1 pb-0 -mt-0.5">
                                         <div class="flex items-center justify-between">
-                                            <p class="font-semibold text-[#0F1419]">{{ $statusLabel }}</p>
-                                            <p class="text-sm text-[#4A5568] font-mono">{{ $history->created_at->format('d M Y, H:i') }}</p>
+                                            <p class="font-semibold text-red-600">{{ $labels['cancelled'] }}</p>
+                                            @php $cancelEntry = $order->statusHistories->firstWhere('status', 'cancelled'); @endphp
+                                            @if($cancelEntry)
+                                                <p class="text-sm text-gray-500 font-mono">{{ $cancelEntry->created_at->format('d M Y, H:i') }}</p>
+                                            @endif
                                         </div>
-                                        @if($history->notes)
-                                            <p class="text-sm text-[#4A5568] mt-0.5">{{ $history->notes }}</p>
+                                        @if($cancelEntry && $cancelEntry->notes && $cancelEntry->notes !== 'Order created')
+                                            <p class="text-sm text-gray-500 mt-0.5">{{ $cancelEntry->notes }}</p>
                                         @endif
                                     </div>
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
-                @endif
             </div>
             {{-- Order Summary --}}
             <div>

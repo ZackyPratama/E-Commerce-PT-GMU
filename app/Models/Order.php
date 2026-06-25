@@ -104,7 +104,7 @@ class Order extends Model
     {
         $this->update(['status' => $newStatus]);
 
-        $this->statusHistory()->create([
+        $this->statusHistories()->create([
             'status' => $newStatus,
             'notes' => $notes,
             'user_id' => $userid

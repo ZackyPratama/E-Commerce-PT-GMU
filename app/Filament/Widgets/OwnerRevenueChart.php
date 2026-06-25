@@ -21,8 +21,9 @@ class OwnerRevenueChart extends ChartWidget
     {
         $activeFilter = $this->filter;
 
-        $data = Trend::model(Order::class)
-            ->where('payment_status', 'paid')
+        $query = Order::where('payment_status', 'paid');
+
+        $data = Trend::query($query)
             ->between(
                 start: match ($activeFilter) {
                     'week' => now()->subWeek(),
