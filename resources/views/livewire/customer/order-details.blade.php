@@ -134,7 +134,7 @@
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6">Riwayat Pesanan</h2>
                     <div class="relative">
-                        <div class="absolute left-[18px] top-3 bottom-3 w-0.5 bg-[#4A5568]/20"></div>
+                        <div class="absolute left-4.5 top-3 bottom-3 w-0.5 bg-[#4A5568]/20"></div>
                         <div class="space-y-0">
                             @foreach($statusFlow as $i => $status)
                                 @php

@@ -28,7 +28,7 @@ class RFQForm
                             'draft' => 'Draft',
                             'submitted' => 'Diajukan',
                             'under_review' => 'Ditinjau',
-                            'quoted' => 'Penawaran Dikirim',
+                            'quoted' => 'Penawaran Diberikan',
                             'accepted' => 'Diterima',
                             'rejected' => 'Ditolak',
                             'expired' => 'Kadaluarsa',

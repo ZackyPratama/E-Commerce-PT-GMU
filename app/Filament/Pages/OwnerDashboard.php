@@ -13,7 +13,9 @@ use BackedEnum;
 
 class OwnerDashboard extends Dashboard
 {
-    protected static string $routePath = '/owner';
+    protected static string $routePath = '/';
+
+    protected static bool $isDiscovered = false;
 
     protected static ?string $navigationLabel = 'Dashboard';
 
