@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Enums\PaymentStatusEnum;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 
@@ -103,9 +104,9 @@ class MidtransController extends Controller
      */
     private function markPaymentAsSuccess(Order $order)
     {
-        if ($order->payment_status !== 'completed') {
+        if ($order->payment_status !== PaymentStatusEnum::PAID) {
             $order->update([
-                'payment_status' => 'completed',
+                'payment_status' => PaymentStatusEnum::PAID,
                 'status' => 'confirmed',
                 'payment_completed_at' => now(),
             ]);
@@ -119,9 +120,9 @@ class MidtransController extends Controller
      */
     private function markPaymentAsPending(Order $order)
     {
-        if ($order->payment_status !== 'pending') {
+        if ($order->payment_status !== PaymentStatusEnum::PENDING) {
             $order->update([
-                'payment_status' => 'pending',
+                'payment_status' => PaymentStatusEnum::PENDING,
             ]);
 
             \Log::info('Order payment marked as pending', ['order_id' => $order->id]);
@@ -133,9 +134,9 @@ class MidtransController extends Controller
      */
     private function markPaymentAsFailed(Order $order, $reason = null)
     {
-        if ($order->payment_status !== 'failed') {
+        if ($order->payment_status !== PaymentStatusEnum::FAILED) {
             $order->update([
-                'payment_status' => 'failed',
+                'payment_status' => PaymentStatusEnum::FAILED,
                 'status' => 'cancelled',
             ]);
 
@@ -151,9 +152,9 @@ class MidtransController extends Controller
      */
     private function markPaymentAsRefunded(Order $order)
     {
-        if ($order->payment_status !== 'refunded') {
+        if ($order->payment_status !== PaymentStatusEnum::REFUNDED) {
             $order->update([
-                'payment_status' => 'refunded',
+                'payment_status' => PaymentStatusEnum::REFUNDED,
                 'status' => 'refunded',
             ]);
 

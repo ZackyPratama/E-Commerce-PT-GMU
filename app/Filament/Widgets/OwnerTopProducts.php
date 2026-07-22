@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\OrderItem;
+use App\Enums\PaymentStatusEnum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -18,11 +19,13 @@ class OwnerTopProducts extends TableWidget
 
     public function table(Table $table): Table
     {
+        $paidStatuses = [PaymentStatusEnum::PAID, 'completed'];
+
         return $table
             ->query(
                 fn(): Builder => OrderItem::query()
                     ->select('product_name', DB::raw('SUM(quantity) as total_qty'), DB::raw('SUM(subtotal) as total_revenue'))
-                    ->whereHas('order', fn(Builder $q) => $q->where('payment_status', 'paid'))
+                    ->whereHas('order', fn(Builder $q) => $q->whereIn('payment_status', $paidStatuses))
                     ->groupBy('product_name')
             )
             ->columns([

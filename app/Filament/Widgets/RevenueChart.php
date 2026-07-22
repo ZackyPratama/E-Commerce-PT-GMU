@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Order;
+use App\Enums\PaymentStatusEnum;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
@@ -13,30 +14,42 @@ class RevenueChart extends ChartWidget
     protected int | string | array $columnSpan = 'full';
     protected ?string $heading = 'Statistik Pendapatan';
 
-    // filter untuk memilih periode waktu
     public ?string $filter = 'week';
 
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        $data = Trend::model(Order::class)
-            ->between(
-                start: match ($activeFilter) {
-                    'week' => now()->subWeek(),
-                    'month' => now()->subMonth(),
-                    'year' => now()->subYear(),
-                },
-                end: now()
+        $paidStatuses = [PaymentStatusEnum::PAID, 'completed'];
 
-            )
-            ->perWeek()
-            ->sum('total');
+        $query = Order::query()->whereIn('payment_status', $paidStatuses);
+
+        $data = match ($activeFilter) {
+            'week' => Trend::query($query)
+                ->between(start: now()->subWeek(), end: now())
+                ->perDay()
+                ->sum('total'),
+            'month' => Trend::query($query)
+                ->between(start: now()->subMonth(), end: now())
+                ->perWeek()
+                ->sum('total'),
+            'year' => Trend::query($query)
+                ->between(start: now()->subYear(), end: now())
+                ->perMonth()
+                ->sum('total'),
+            default => Trend::query($query)
+                ->between(start: now()->subWeek(), end: now())
+                ->perDay()
+                ->sum('total'),
+        };
+
         return [
-            'dataset' =>[
-                'label' => 'Pendapatan',
-                'data' => $data->map(fn(TrendValue $value) => $value->aggregate)
+            'datasets' => [
+                [
+                    'label' => 'Pendapatan',
+                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
+                ],
             ],
-            'labels' => $data->map(fn(TrendValue $value) => $value->date)
+            'labels' => $data->map(fn(TrendValue $value) => $value->date),
         ];
     }
 
@@ -45,12 +58,12 @@ class RevenueChart extends ChartWidget
         return 'line';
     }
 
-    protected function getFilter(): array|null
+    protected function getFilters(): ?array
     {
         return [
-            'week'=>'last Week',
-            'month' => 'Last Month',
-            'year' => 'Last Year'
+            'week' => 'Minggu Ini',
+            'month' => 'Bulan Ini',
+            'year' => 'Tahun Ini',
         ];
     }
 }

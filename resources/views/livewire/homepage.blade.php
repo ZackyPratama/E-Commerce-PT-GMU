@@ -184,7 +184,7 @@
                             </div>
                             <div>
                                 <p class="text-[0.75rem] font-['Geist_Mono',monospace] text-[#4A5568] uppercase tracking-wider mb-1">Email</p>
-                                <p class="text-[0.95rem] font-medium text-[#0F1419]">hello@pa-ecommerce.com</p>
+                                <p class="text-[0.95rem] font-medium text-[#0F1419]">gmukaryatech@gmail.com</p>
                             </div>
                         </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,6 +45,18 @@ class Order extends Model
         'rfq_id',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'subtotal' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
+            'shipping_cost' => 'decimal:2',
+            'tax_amount' => 'decimal:2',
+            'total' => 'decimal:2',
+            'payment_status' => PaymentStatusEnum::class,
+        ];
+    }
+
     // Scope to filter orders by status
     #[Scope]
     protected function ofStatus(Builder $query, string $status): void
@@ -84,6 +97,12 @@ class Order extends Model
     protected function delivered(Builder $query): void
     {
         $query->where('status', 'delivered');
+    }
+
+    #[Scope]
+    protected function paid(Builder $query): void
+    {
+        $query->whereIn('payment_status', [PaymentStatusEnum::PAID, PaymentStatusEnum::COMPLETED]);
     }
 
     // Helper Method

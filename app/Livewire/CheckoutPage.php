@@ -8,6 +8,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Setting;
+use App\Enums\PaymentStatusEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
@@ -192,7 +193,7 @@ class CheckoutPage extends Component
                 'tax_amount' => $taxAmount,
                 'total' => $total,
                 'payment_method' => $this->paymentMethod,
-                'payment_status' => 'pending',
+                'payment_status' => PaymentStatusEnum::PENDING,
                 'status' => 'pending',
                 'customer_notes' => $this->customerNotes,
             ] + $shippingData);

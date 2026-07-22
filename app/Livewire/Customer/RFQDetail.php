@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\RFQ;
 use App\Models\User;
+use App\Enums\PaymentStatusEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
@@ -53,7 +54,7 @@ class RFQDetail extends Component
                 'tax_amount' => $this->rfq->tax_amount ?? 0,
                 'total' => $total,
                 'payment_method' => 'midtrans',
-                'payment_status' => 'pending',
+                'payment_status' => PaymentStatusEnum::PENDING,
                 'status' => 'pending',
                 'customer_notes' => $this->rfq->customer_notes,
                 'shipping_full_name' => $defaultAddress?->full_name ?? $customer->name,

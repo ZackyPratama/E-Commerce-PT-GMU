@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Enums\PaymentStatusEnum;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -14,8 +15,10 @@ class StatsOverview extends StatsOverviewWidget
     protected ?string $pollingInterval = '10s';
     protected function getStats(): array
     {
-        $totalRevenue = Order::where('payment_status', 'paid')->sum('total');
-        $todayRevenue = Order::where('payment_status', 'paid')
+        $paidStatuses = [PaymentStatusEnum::PAID, 'completed'];
+        
+        $totalRevenue = Order::whereIn('payment_status', $paidStatuses)->sum('total');
+        $todayRevenue = Order::whereIn('payment_status', $paidStatuses)
         ->whereDate('created_at', 'today')->sum('total');
 
         $totalOrder = Order::count();

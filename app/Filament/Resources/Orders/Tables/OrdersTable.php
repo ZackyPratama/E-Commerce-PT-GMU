@@ -50,12 +50,16 @@ class OrdersTable
                 TextColumn::make('payment_status')
                     ->label('Status Pembayaran')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'paid' => 'success',
-                        'failed' => 'danger',
-                        'refunded' => 'info',
-                        default => 'secondary',
+                    ->formatStateUsing(fn($state) => $state instanceof \App\Enums\PaymentStatusEnum ? $state->value : $state)
+                    ->color(function ($state) {
+                        $value = $state instanceof \App\Enums\PaymentStatusEnum ? $state->value : $state;
+                        return match ($value) {
+                            'pending' => 'warning',
+                            'paid' => 'success',
+                            'failed' => 'danger',
+                            'refunded' => 'info',
+                            default => 'secondary',
+                        };
                     })
                     ->searchable(),
                 TextColumn::make('status')

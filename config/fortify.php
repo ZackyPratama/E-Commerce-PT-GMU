@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/my-account', // route after login -> ubah aja sesuai kebutuhan
+    'home' => '/', // route after login -> ubah aja sesuai kebutuhan
 
     /*
     |--------------------------------------------------------------------------
