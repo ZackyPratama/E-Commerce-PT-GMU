@@ -56,7 +56,7 @@
                         <div>
                             <p class="text-sm text-gray-600">Metode Pembayaran</p>
                             <p class="font-semibold text-gray-900">
-                                {{ $order->payment_method === 'midtrans' ? 'Kartu Kredit/Debit' : 'Cash on Delivery' }}
+                                {{ $order->payment_method === 'midtrans' ? 'Midtrans Payment Gateway' : 'Cash on Delivery' }}
                             </p>
                         </div>
                         @if($order->tracking_number)

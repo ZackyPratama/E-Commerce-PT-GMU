@@ -93,7 +93,7 @@
                                 </div>
                                 <div>
                                     <p class="font-semibold text-gray-900">Permintaan Penawaran</p>
-                                    <p class="text-sm text-gray-600">Lihat status RFQ</p>
+                                    <p class="text-sm text-gray-600">Lihat status Permintaan Penawaran</p>
                                 </div>
                             </a>
                         @endif
@@ -108,8 +108,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-900">My Orders</p>
-                                <p class="text-sm text-gray-600">View order history</p>
+                                <p class="font-semibold text-gray-900">Pesanan</p>
+                                <p class="text-sm text-gray-600">Lihat riwayat pesanan</p>
                             </div>
                         </a>
                         {{-- my profile --}}
@@ -123,8 +123,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-900">My Profile</p>
-                                <p class="text-sm text-gray-600">Manage account details</p>
+                                <p class="font-semibold text-gray-900">Profil</p>
+                                <p class="text-sm text-gray-600">Kelola detail akun</p>
                             </div>
                         </a>
                         {{-- Lanjutkan Belanja --}}
@@ -138,8 +138,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-900">Continue Shopping</p>
-                                <p class="text-sm text-gray-600">Browse products</p>
+                                <p class="font-semibold text-gray-900">Lanjutkan Belanja</p>
+                                <p class="text-sm text-gray-600">Jelajahi produk</p>
                             </div>
                         </a>
 
@@ -156,7 +156,7 @@
                                 </div>
                                 <div class="text-left">
                                     <p class="font-semibold text-gray-900">Logout</p>
-                                    <p class="text-sm text-gray-600">Sign out of account</p>
+                                    <p class="text-sm text-gray-600">Keluar dari akun</p>
                                 </div>
                             </button>
                         </form>

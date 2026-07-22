@@ -104,7 +104,7 @@
                     <li>
                         <a href="{{ route('products.index') }}"
                             class="text-gray-500 hover:text-gray-900 font-medium transition-colors">
-                            Shop
+                            Katalog
                         </a>
                     </li>
                     @foreach(\App\Models\Category::active()->sorted()->limit(5)->get() as $category)

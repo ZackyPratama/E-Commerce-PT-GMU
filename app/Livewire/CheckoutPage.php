@@ -144,6 +144,8 @@ class CheckoutPage extends Component
     // Fungsi untuk memproses pesanan
     public function placeOrder()
     {
+        // // Debugging: Melihat semua properti publik yang ada di komponen ini
+        // dd($this->all());
         try {
             DB::beginTransaction();
             // ambil data alamat pengiriman yang sudah ada atau data alamat yang diinputkan baru

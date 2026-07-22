@@ -171,7 +171,7 @@
                             </a>
                             <button wire:click="nextStep"
                                 class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition font-semibold">
-                                Lanjut ke Review
+                                Lanjut ke Pesanan
                             </button>
                         </div>
                     </div>
@@ -180,7 +180,7 @@
                 <!-- Step 2: Review Order -->
                 @if($step === 2)
                     <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h2 class="text-xl font-bold text-gray-900 mb-6">Review Pesanan</h2>
+                        <h2 class="text-xl font-bold text-gray-900 mb-6">Cek Ulang Pesanan</h2>
 
                         <!-- Order Items -->
                         <div class="space-y-4 mb-6">
@@ -244,8 +244,9 @@
                                                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                             </svg>
                                             <div>
-                                                <p class="font-semibold text-gray-900">Kartu Kredit</p>
-                                                <p class="text-sm text-gray-600">Pembayaran Diamankan melalui Midtrans</p>
+                                                <p class="font-semibold text-gray-900">Midtrans Payment Gateway</p>
+                                                <p class="text-sm text-gray-600">Pilih Metode Pembayaran Menggunakan
+                                                    Midtrans</p>
                                             </div>
                                         </div>
                                     </div>

@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# opencode (local MCP config - not for VCS)
+.opencode/
