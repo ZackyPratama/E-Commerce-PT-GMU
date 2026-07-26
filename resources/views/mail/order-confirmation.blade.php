@@ -91,7 +91,7 @@
             <p><strong>Tanggal Pesanan:</strong> {{ $order->created_at->format('M d, Y h:i A') }}</p>
             <p><strong>Metode Pembayaran:</strong>
                 {{ $order->payment_method === 'midtrans' ? 'Kartu Kredit/Debit' : 'Cash on Delivery' }}</p>
-            <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->payment_status) }}</p>
+            <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->payment_status->value) }}</p>
         </div>
 
         <h3>Item Pesanan</h3>

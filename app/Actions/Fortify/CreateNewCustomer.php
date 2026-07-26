@@ -35,7 +35,22 @@ class CreateNewCustomer implements CreatesNewUsers
             $rules['company_registration_number'] = ['nullable', 'string', 'max:50'];
         }
 
-        Validator::make($input, $rules)->validate();
+        Validator::make($input, $rules, [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.max' => 'Nama lengkap maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar. Silakan gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'type.required' => 'Jenis akun wajib dipilih.',
+            'type.in' => 'Jenis akun tidak valid.',
+            'phone.max' => 'Nomor telepon maksimal 20 karakter.',
+            'company_name.required' => 'Nama perusahaan wajib diisi untuk akun B2B.',
+            'company_name.max' => 'Nama perusahaan maksimal 255 karakter.',
+            'company_registration_number.max' => 'Nomor registrasi perusahaan maksimal 50 karakter.',
+        ])->validate();
 
         $data = [
             'name' => $input['name'],

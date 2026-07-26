@@ -16,6 +16,12 @@
             </div>
         @endif
 
+        @if (session()->has('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div class="flex items-center justify-between mb-6">
                 <div>

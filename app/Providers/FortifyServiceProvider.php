@@ -40,7 +40,9 @@ class FortifyServiceProvider extends ServiceProvider
             $customer = Customer::where('email', $request->email)->first();
 
             if (!$customer || !Hash::check($request->password, $customer->password)) {
-                return;
+                throw ValidationException::withMessages([
+                    'email' => 'Email atau password salah.',
+                ]);
             }
 
             // Cek status B2B
@@ -90,13 +92,21 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureRateLimiting(): void
     {
         RateLimiter::for('two-factor', function (Request $request) {
-            return Limit::perMinute(5)->by($request->session()->get('login.id'));
+            return Limit::perMinute(5)
+                ->by($request->session()->get('login.id'))
+                ->response(fn (Request $request, array $headers) => throw ValidationException::withMessages([
+                    'email' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam beberapa menit.',
+                ]));
         });
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
-            return Limit::perMinute(5)->by($throttleKey);
+            return Limit::perMinute(5)
+                ->by($throttleKey)
+                ->response(fn (Request $request, array $headers) => throw ValidationException::withMessages([
+                    'email' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam beberapa menit.',
+                ]));
         });
     }
 

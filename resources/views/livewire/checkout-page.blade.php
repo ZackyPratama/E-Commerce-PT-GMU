@@ -300,16 +300,16 @@
                             <span class="text-gray-600">Subtotal</span>
                             <span class="font-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex justify-between">
+                        {{-- <div class="flex justify-between">
                             <span class="text-gray-600">Ongkos Kirim</span>
                             <span class="font-medium">
                                 @if($shippingCost > 0)
-                                    Rp {{ number_format($shippingCost, 0, ',', '.') }}
+                                Rp {{ number_format($shippingCost, 0, ',', '.') }}
                                 @else
-                                    <span class="text-green-600">Gratis</span>
+                                <span class="text-green-600">Gratis</span>
                                 @endif
                             </span>
-                        </div>
+                        </div> --}}
                         @if($discountAmount > 0)
                             <div class="flex justify-between text-green-600">
                                 <span>Diskon</span>

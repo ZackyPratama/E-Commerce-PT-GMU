@@ -83,7 +83,7 @@ class CheckoutPage extends Component
         }
 
         $this->appliedCoupon = $coupon;
-        session()->flash('coupon_success', 'Kupon berhasil diterapkan! Anda mendapatkan diskon ' . $coupon->discount_amount . '%.');
+        session()->flash('coupon_success', 'Kupon berhasil diterapkan! Anda mendapatkan diskon ' . $coupon->value . '%.');
     }
 
     // Hapus kupon yang telah dipakai

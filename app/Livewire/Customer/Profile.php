@@ -25,8 +25,8 @@ class Profile extends Component
     public $editingAddressId = null;
     public $address_full_name;
     public $address_phone;
-    public $address_line1;
-    public $address_line2;
+    public $address_line_1;
+    public $address_line_2;
     public $address_city;
     public $address_state;
     public $address_postal_code;
@@ -90,8 +90,8 @@ class Profile extends Component
             'editingAddressId',
             'address_full_name',
             'address_phone',
-            'address_line1',
-            'address_line2',
+            'address_line_1',
+            'address_line_2',
             'address_city',
             'address_state',
             'address_postal_code',
@@ -110,8 +110,8 @@ class Profile extends Component
         $this->editingAddressId = $address->id;
         $this->address_full_name = $address->full_name;
         $this->address_phone = $address->phone;
-        $this->address_line1 = $address->line1;
-        $this->address_line2 = $address->line2;
+        $this->address_line_1 = $address->address_line_1;
+        $this->address_line_2 = $address->address_line_2;
         $this->address_city = $address->city;
         $this->address_state = $address->state;
         $this->address_postal_code = $address->postal_code;
@@ -125,8 +125,8 @@ class Profile extends Component
         $this->validate([
             'address_full_name' => 'required|string|max:255',
             'address_phone' => 'required|string|max:20',
-            'address_line1' => 'required|string|max:255',
-            'address_line2' => 'nullable|string|max:255',
+            'address_line_1' => 'required|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
             'address_city' => 'required|string|max:100',
             'address_state' => 'required|string|max:100',
             'address_postal_code' => 'required|string|max:20',
@@ -136,8 +136,8 @@ class Profile extends Component
             'customer_id' => auth('customer')->id(),
             'full_name' => $this->address_full_name,
             'phone' => $this->address_phone,
-            'line1' => $this->address_line1,
-            'line2' => $this->address_line2,
+            'address_line_1' => $this->address_line_1,
+            'address_line_2' => $this->address_line_2,
             'city' => $this->address_city,
             'state' => $this->address_state,
             'postal_code' => $this->address_postal_code,

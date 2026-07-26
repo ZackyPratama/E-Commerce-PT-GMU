@@ -47,10 +47,10 @@
                         <div>
                             <p class="text-sm text-gray-600">Status Pembayaran</p>
                             <span class="inline-block px-2 py-1 text-sm rounded {{ 
-                                $order->payment_status === 'paid' ? 'bg-green-100 text-green-800' : 
+                                $order->payment_status->value === 'paid' || $order->payment_status->value === 'completed' ? 'bg-green-100 text-green-800' : 
                                 'bg-yellow-100 text-yellow-800' 
                             }}">
-                                {{ ucfirst($order->payment_status) }}
+                                {{ ucfirst($order->payment_status->value) }}
                             </span>
                         </div>
                         <div>

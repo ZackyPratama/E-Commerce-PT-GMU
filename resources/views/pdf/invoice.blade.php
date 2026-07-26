@@ -306,7 +306,7 @@
                 <p>Tanggal</p>
                 <div class="value">{{ $order->created_at->format('d M Y') }}</div>
                 <p>Pembayaran</p>
-                @if($order->payment_status === 'paid')
+                @if($order->payment_status->value === 'paid' || $order->payment_status->value === 'completed')
                     <div class="status-paid">Lunas</div>
                 @else
                     <div class="status-unpaid">Belum dibayar</div>
