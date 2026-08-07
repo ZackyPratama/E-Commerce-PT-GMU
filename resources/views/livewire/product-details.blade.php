@@ -5,7 +5,7 @@
             <ol class="flex items-center gap-2">
                 <li><a href="{{ route('home') }}" class="text-gray-500 hover:text-blue-600">Home</a></li>
                 <li class="text-gray-400">/</li>
-                <li><a href="{{ route('products.index') }}" class="text-gray-500 hover:text-blue-600">Shop</a></li>
+                <li><a href="{{ route('products.index') }}" class="text-gray-500 hover:text-blue-600">Katalog</a></li>
                 <li class="text-gray-400">/</li>
                 <li><a href="{{ route('products.index', ['category' => $product->category->slug]) }}"
                         class="text-gray-500 hover:text-blue-600">{{ $product->category->name }}</a></li>
@@ -55,9 +55,9 @@
                                 Rekomendasi
                             </span>
                         @endif
-                        @if($product->stock_status === 'in_stock')
+                        @if($this->maxStock > 0)
                             <span class="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded">
-                                Tersedia
+                                Tersedia ({{ $this->maxStock }})
                             </span>
                         @else
                             <span class="bg-red-100 text-red-800 text-sm font-semibold px-3 py-1 rounded">
@@ -168,7 +168,7 @@
                     <!-- Variants -->
                     @if($product->has_variants && $product->variants->isNotEmpty())
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-900 mb-3">Select Variant:</label>
+                            <label class="block text-sm font-medium text-gray-900 mb-3">Pilih Varian:</label>
                             <div class="grid grid-cols-2 gap-3">
                                 @foreach($product->variants->where('is_active', true) as $variant)
                                     <button wire:click="selectVariant({{ $variant->id }})"
@@ -183,8 +183,8 @@
                                             </p>
                                         @endif
                                         <p
-                                            class="text-xs {{ $variant->stock_status === 'in_stock' ? 'text-green-600' : 'text-red-600' }}">
-                                            {{ $variant->stock_status === 'in_stock' ? 'Tersedia' : 'Stok Habis' }}
+                                            class="text-xs {{ $variant->stock_status === 'in_stock' && $variant->stock_quantity > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                            {{ $variant->stock_status === 'in_stock' && $variant->stock_quantity > 0 ? 'Tersedia (' . $variant->stock_quantity . ')' : 'Stok Habis' }}
                                         </p>
                                     </button>
                                 @endforeach
@@ -194,7 +194,7 @@
 
                     <!-- Quantity -->
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-900 mb-3">Quantity:</label>
+                        <label class="block text-sm font-medium text-gray-900 mb-3">Jumlah:</label>
                         <div class="flex items-center gap-3">
                             <button wire:click="decrementQuantity"
                                 class="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-100 flex items-center justify-center">
@@ -203,7 +203,7 @@
                                         d="M20 12H4" />
                                 </svg>
                             </button>
-                            <input type="number" wire:model="quantity" min="1"
+                            <input type="number" wire:model="quantity" min="1" max="{{ $this->maxStock }}"
                                 class="w-20 text-center border border-gray-300 rounded-lg py-2">
                             <button wire:click="incrementQuantity"
                                 class="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-100 flex items-center justify-center">
@@ -215,20 +215,8 @@
                         </div>
                     </div>
 
-                    <!-- Flash Messages -->
-                    @if (session()->has('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    @if (session()->has('error'))
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                            {{ session('error') }}
-                        </div>
-                    @endif
-
                     <!-- Add to Cart -->
-                    @if($product->stock_status === 'in_stock')
+                    @if($this->maxStock > 0)
                         <button wire:click="addToCart"
                             class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition font-semibold text-lg">
                             Tambah ke Keranjang
@@ -262,6 +250,12 @@
                                 </a>
                             </div>
                         @endif
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Stok:</span>
+                            <span class="font-medium {{ $this->maxStock > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $this->maxStock > 0 ? $this->maxStock . ' unit' : 'Habis' }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

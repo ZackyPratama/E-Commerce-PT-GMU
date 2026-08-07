@@ -29,6 +29,25 @@ class CartPage extends Component
         $this->cart = session()->get('cart', []);
     }
 
+    private function getStockForItem(array $item): int
+    {
+        if (!empty($item['variant_id'])) {
+            $variant = ProductVariant::find($item['variant_id']);
+            return $variant ? $variant->stock_quantity : 0;
+        }
+        $product = Product::find($item['product_id']);
+        return $product ? $product->stock_quantity : 0;
+    }
+
+    public function getStockForCartKey($cartKey): int
+    {
+        $cart = session()->get('cart', []);
+        if (!isset($cart[$cartKey])) {
+            return 0;
+        }
+        return $this->getStockForItem($cart[$cartKey]);
+    }
+
     public function updateQuantity($cartKey, $quantity)
     {
         if ($quantity < 1) {
@@ -36,6 +55,11 @@ class CartPage extends Component
         }
         $cart = session()->get('cart', []);
         if (isset($cart[$cartKey])) {
+            $stock = $this->getStockForItem($cart[$cartKey]);
+            if ($quantity > $stock) {
+                $this->dispatch('error', ['message' => 'Stok tidak mencukupi. Sisa stok: ' . $stock]);
+                return;
+            }
             $cart[$cartKey]['quantity'] = $quantity;
             session()->put('cart', $cart);
             $this->loadCart();

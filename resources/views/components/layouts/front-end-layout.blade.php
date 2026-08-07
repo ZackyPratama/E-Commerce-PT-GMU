@@ -22,103 +22,16 @@
         }
     </style>
 
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     @filamentStyles
 
 </head>
 
 <body class="bg-[#F1F3F5] text-[#0F1419] font-['Geist',sans-serif] antialiased">
     <!-- Header -->
-    <header class="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <!-- Top Bar -->
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <div class="flex items-center shrink-0">
-                    <a href="{{ route('home') }}"
-                        class="text-2xl font-bold tracking-tight text-gray-900 hover:opacity-80 transition-opacity">
-                        {{ config('app.name', 'E-Commerce') }}
-                    </a>
-                </div>
-
-                <!-- Search Bar (Desktop) -->
-                <div class="hidden flex-1 max-w-2xl mx-12 lg:block">
-                    <livewire:search-bar />
-                </div>
-
-                <!-- Right Side -->
-                <div class="flex items-center gap-6 shrink-0">
-                    @auth('customer')
-                        <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" @click.away="open = false"
-                                class="text-gray-500 hover:text-gray-900 transition-colors">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </button>
-                            <div x-show="open" x-cloak
-                                class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
-                                @click="open = false">
-                                <a href="{{ route('customer.dashboard') }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Dashboard</a>
-                                <a href="{{ route('customer.orders') }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Pesanan</a>
-                                @if(auth('customer')->user()->isB2BApproved())
-                                    <a href="{{ route('customer.rfqs.index') }}"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Permintaan Penawaran</a>
-                                @endif
-                                <a href="{{ route('customer.profile') }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profil</a>
-                                <hr class="my-1 border-gray-100">
-                                <a href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                                    class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                                    @csrf
-                                </form>
-                            </div>
-                        </div>
-                    @else
-                        <a href="{{ route('login') }}"
-                            class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-                            Masuk
-                        </a>
-                    @endauth
-
-                    <!-- Cart -->
-                    <div class="text-gray-500 hover:text-gray-900 transition-colors">
-                        <livewire:cart-icon />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <nav class="hidden md:block pb-4">
-                <ul class="flex items-center gap-8 text-sm">
-                    <li>
-                        <a href="{{ route('home') }}"
-                            class="text-gray-500 hover:text-gray-900 font-medium transition-colors">
-                            Beranda
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('products.index') }}"
-                            class="text-gray-500 hover:text-gray-900 font-medium transition-colors">
-                            Katalog
-                        </a>
-                    </li>
-                    @foreach(\App\Models\Category::active()->sorted()->limit(5)->get() as $category)
-                        <li>
-                            <a href="{{ route('products.index', ['category' => $category->slug]) }}"
-                                class="text-gray-500 hover:text-gray-900 transition-colors">
-                                {{ $category->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <x-header />
 
     <!-- Main Content -->
     <main>
@@ -143,7 +56,7 @@
                         <li><a href="{{ route('products.index') }}"
                                 class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Belanja</a>
                         </li>
-                        <li><a href="#"
+                        <li><a href="{{ route('home') }}#tentang"
                                 class="text-[#F1F3F5] hover:text-[#FFFFFF] text-[0.95rem] transition-colors">Tentang
                                 Kami</a></li>
                         <li><a href="#"
@@ -195,6 +108,37 @@
 
     @livewireScripts
     @filamentScripts
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Global Livewire SweetAlert listener -->
+    <script>
+        Livewire.on('swal', (...params) => {
+            const data = Array.isArray(params[0]) ? params[0][0] : params[0];
+            Swal.fire(data);
+        });
+        Livewire.on('error', (...params) => {
+            const data = Array.isArray(params[0]) ? params[0][0] : params[0];
+            const message = data?.message || (typeof data === 'string' ? data : null) || 'Terjadi kesalahan';
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: message,
+                confirmButtonColor: '#dc2626'
+            });
+        });
+        Livewire.on('success', (...params) => {
+            const data = Array.isArray(params[0]) ? params[0][0] : params[0];
+            const message = data?.message || (typeof data === 'string' ? data : '') || '';
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: message,
+                confirmButtonColor: '#2563eb'
+            });
+        });
+    </script>
 
 </body>
 

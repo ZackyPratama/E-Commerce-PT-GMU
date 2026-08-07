@@ -81,6 +81,7 @@
                                         </svg>
                                     </button>
                                 </div>
+                                <p class="text-xs text-gray-500">Stok: {{ $this->getStockForCartKey($cartKey) }}</p>
 
                                 <p class="text-lg font-bold text-gray-900">
                                     Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}

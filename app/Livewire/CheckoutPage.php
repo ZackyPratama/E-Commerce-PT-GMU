@@ -147,6 +147,24 @@ class CheckoutPage extends Component
     {
         // // Debugging: Melihat semua properti publik yang ada di komponen ini
         // dd($this->all());
+
+        // Validasi stok sebelum proses order
+        $cart = session()->get('cart', []);
+        foreach ($cart as $item) {
+            $stock = 0;
+            if (!empty($item['variant_id'])) {
+                $variant = \App\Models\ProductVariant::find($item['variant_id']);
+                $stock = $variant ? $variant->stock_quantity : 0;
+            } else {
+                $product = \App\Models\Product::find($item['product_id']);
+                $stock = $product ? $product->stock_quantity : 0;
+            }
+            if ($item['quantity'] > $stock) {
+                $this->dispatch('error', ['message' => 'Stok "' . $item['name'] . '" tidak mencukupi. Sisa stok: ' . $stock]);
+                return;
+            }
+        }
+
         try {
             DB::beginTransaction();
             // ambil data alamat pengiriman yang sudah ada atau data alamat yang diinputkan baru

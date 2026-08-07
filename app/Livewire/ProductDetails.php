@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Product;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -43,6 +44,19 @@ class ProductDetails extends Component
         return null;
     }
 
+    #[Computed]
+    public function maxStock(): int
+    {
+        if (!$this->product->manage_stock) {
+            return 9999;
+        }
+        if ($this->selectedVariant) {
+            $variant = $this->product->variants->find($this->selectedVariant);
+            return $variant ? $variant->stock_quantity : 0;
+        }
+        return $this->product->stock_quantity;
+    }
+
     public function getEffectivePriceProperty()
     {
         $variant = $this->getSelectedVariantModel();
@@ -53,15 +67,20 @@ class ProductDetails extends Component
     }
 
     public function selectVariant($variantId){
-        $this->selectedVariant = $variantId; 
-    } 
+        $this->selectedVariant = $variantId;
+        $this->quantity = 1;
+    }
 
     public function selectImage($imagePath){
         $this->selectedImage = $imagePath;
     }
 
     public function incrementQuantity(){
-        $this->quantity++;
+        if($this->quantity < $this->maxStock){
+            $this->quantity++;
+        } else {
+            $this->dispatch('error', ['message' => 'Stok tidak mencukupi. Sisa stok: ' . $this->maxStock]);
+        }
     }
 
     public function decrementQuantity(){
@@ -77,8 +96,22 @@ class ProductDetails extends Component
             return;
         }
 
+        if($this->maxStock <= 0){
+            $this->dispatch('error', ['message' => 'Stok produk ini habis.']);
+            return;
+        }
+
         $cart = session()->get('cart', []);
         $cartKey = $this->selectedVariant ? 'variant' . $this->selectedVariant : 'product' . $this->product->id;
+
+        $existingQty = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
+        $totalQty = $existingQty + $this->quantity;
+
+        if($totalQty > $this->maxStock){
+            $remaining = max(0, $this->maxStock - $existingQty);
+            $this->dispatch('error', ['message' => 'Stok tidak mencukupi. Sisa stok: ' . $remaining]);
+            return;
+        }
 
         if(isset($cart[$cartKey])){
             $cart[$cartKey]['quantity'] += $this->quantity;
