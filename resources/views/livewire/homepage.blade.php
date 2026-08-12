@@ -6,7 +6,7 @@
     <x-sections.category-grid :categories="$categories" />
 
     <!-- Promo Hari Ini / Flash Sale -->
-    <x-sections.flash-sale :products="$featuredProducts" />
+    <x-sections.flash-sale :products="$flashSaleProducts" />
 
     <!-- Produk Terbaru -->
     <section class="py-8">
@@ -26,6 +26,9 @@
             </div>
         </div>
     </section>
+
+    <!-- Semua Produk -->
+    <x-sections.all-products :products="$allProducts" />
 
     <!-- Trust / Keunggulan (anchor "tentang") -->
     <section id="tentang" class="py-16">
@@ -73,6 +76,8 @@
             </div>
         </div>
     </section>
+
+    
 
     <!-- Contact Section -->
     <section class="py-16 border-t border-[#4A5568]/5">
